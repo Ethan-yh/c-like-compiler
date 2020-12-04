@@ -1,0 +1,155 @@
+[
+  { left: 'Program', right: [ 'Stmt_string' ] },
+  { left: 'Stmt_string', right: [ 'Stmt_loop', 'Stmt' ] },
+  { left: 'Stmt_loop', right: [ 'Stmt_loop', 'Stmt' ] },
+  { left: 'Stmt_loop', right: [ '$' ] },
+  { left: 'Stmt', right: [ 'int', 'identifier', 'Stmt_type' ] },
+  {
+    left: 'Stmt',
+    right: [ 'void', 'identifier', 'Create_Function_table', 'Function_stmt' ]
+  },
+  { left: 'Stmt_type', right: [ 'Variavle_stmt' ] },
+  {
+    left: 'Stmt_type',
+    right: [ 'Create_Function_table', 'Function_stmt' ]
+  },
+  { left: 'Create_Function_table', right: [ '$' ] },
+  { left: 'Variavle_stmt', right: [ ';' ] },
+  {
+    left: 'Function_stmt',
+    right: [
+      '(',
+      'Formal_parameter',
+      ')',
+      'Sentence_block',
+      'Exit_Function_table'
+    ]
+  },
+  { left: 'Exit_Function_table', right: [ '$' ] },
+  { left: 'Formal_parameter', right: [ 'Formal_parameter_list' ] },
+  { left: 'Formal_parameter', right: [ 'void' ] },
+  { left: 'Formal_parameter', right: [ '$' ] },
+  {
+    left: 'Formal_parameter_list',
+    right: [ 'Parameter_loop', 'Parameter' ]
+  },
+  {
+    left: 'Parameter_loop',
+    right: [ 'Parameter_loop', 'Parameter', ',' ]
+  },
+  { left: 'Parameter_loop', right: [ '$' ] },
+  { left: 'Parameter', right: [ 'int', 'identifier' ] },
+  {
+    left: 'Sentence_block',
+    right: [
+      'Sentence_block_m',
+      '{',
+      'Internal_stmt',
+      'Sentence_string',
+      '}'
+    ]
+  },
+  { left: 'Sentence_block_m', right: [ '$' ] },
+  { left: 'Internal_stmt', right: [ '$' ] },
+  {
+    left: 'Internal_stmt',
+    right: [ 'Internal_variable_stmt', ';', 'Internal_stmt' ]
+  },
+  { left: 'Internal_variable_stmt', right: [ 'int', 'identifier' ] },
+  { left: 'Sentence_string', right: [ 'Sentence_loop', 'Sentence' ] },
+  { left: 'Sentence_loop', right: [ 'Sentence_loop', 'Sentence' ] },
+  { left: 'Sentence_loop', right: [ '$' ] },
+  { left: 'Sentence', right: [ 'If_sentence' ] },
+  { left: 'Sentence', right: [ 'While_sentence' ] },
+  { left: 'Sentence', right: [ 'Return_sentence' ] },
+  { left: 'Sentence', right: [ 'Assign_sentence' ] },
+  {
+    left: 'Assign_sentence',
+    right: [ 'identifier', '=', 'Expression', ';' ]
+  },
+  {
+    left: 'Return_sentence',
+    right: [ 'return', 'Return_expression', ';' ]
+  },
+  { left: 'Return_expression', right: [ '$' ] },
+  { left: 'Return_expression', right: [ 'Expression' ] },
+  {
+    left: 'While_sentence',
+    right: [
+      'while',
+      'While_sentence_m1',
+      '(',
+      'Expression',
+      ')',
+      'While_sentence_m2',
+      'Sentence_block'
+    ]
+  },
+  { left: 'While_sentence_m1', right: [ '$' ] },
+  { left: 'While_sentence_m2', right: [ '$' ] },
+  {
+    left: 'If_sentence',
+    right: [
+      'if',
+      'If_sentence_m0',
+      '(',
+      'Expression',
+      ')',
+      'If_sentence_m1',
+      'Sentence_block',
+      'If_expression'
+    ]
+  },
+  { left: 'If_expression', right: [ '$' ] },
+  {
+    left: 'If_expression',
+    right: [ 'If_sentence_n', 'else', 'Sentence_block' ]
+  },
+  { left: 'If_sentence_m0', right: [ '$' ] },
+  { left: 'If_sentence_m1', right: [ '$' ] },
+  { left: 'If_sentence_n', right: [ '$' ] },
+  {
+    left: 'Expression',
+    right: [ 'Add_expression_loop', 'Add_expression' ]
+  },
+  { left: 'Add_expression_loop', right: [ '$' ] },
+  {
+    left: 'Add_expression_loop',
+    right: [ 'Add_expression_loop', 'Add_expression', 'Relop' ]
+  },
+  { left: 'Relop', right: [ '<' ] },
+  { left: 'Relop', right: [ '<=' ] },
+  { left: 'Relop', right: [ '>' ] },
+  { left: 'Relop', right: [ '>=' ] },
+  { left: 'Relop', right: [ '==' ] },
+  { left: 'Relop', right: [ '!=' ] },
+  { left: 'Add_expression', right: [ 'Item_loop', 'Item' ] },
+  { left: 'Item_loop', right: [ '$' ] },
+  { left: 'Item_loop', right: [ 'Item_loop', 'Item', '+' ] },
+  { left: 'Item_loop', right: [ 'Item_loop', 'Item', '-' ] },
+  { left: 'Item', right: [ 'Factor_loop', 'Factor' ] },
+  { left: 'Factor_loop', right: [ '$' ] },
+  { left: 'Factor_loop', right: [ 'Factor_loop', 'Factor', '*' ] },
+  { left: 'Factor_loop', right: [ 'Factor_loop', 'Factor', '/' ] },
+  { left: 'Factor', right: [ 'Const_value' ] },
+  { left: 'Factor', right: [ '(', 'Expression', ')' ] },
+  { left: 'Factor', right: [ 'identifier', 'FTYPE' ] },
+  { left: 'FTYPE', right: [ 'Call_func' ] },
+  { left: 'FTYPE', right: [ '$' ] },
+  {
+    left: 'Call_func',
+    right: [ '(', 'Call_func_check', 'Actual_parameter_list', ')' ]
+  },
+  { left: 'Call_func_check', right: [ '$' ] },
+  { left: 'Actual_parameter_list', right: [ '$' ] },
+  {
+    left: 'Actual_parameter_list',
+    right: [ 'Expression_loop', 'Expression' ]
+  },
+  { left: 'Expression_loop', right: [ '$' ] },
+  {
+    left: 'Expression_loop',
+    right: [ 'Expression_loop', 'Expression', ',' ]
+  },
+  { left: 'Const_value', right: [ 'num' ] }
+]

@@ -1,16 +1,53 @@
 
+
+/**
+ * 语法分析类
+ */
 class Syntactic {
     constructor(productionsLines) {
+        /**
+         * 产生式文本行数组
+         */
         this.productionsLines = productionsLines;
+
+        /**
+         * 产生式
+         * [{left:产生式左端, right:[]}, ...]
+         */
         this.productions = [];
+
+        /**
+         * first集合
+         */
         this.firstSet = {};
+
+        /**
+         * follow集合
+         */
         this.followSet = {};
+
+        /**
+         * LR0项目
+         * [{proNum:产生式序号, pointPos:小圆点位置(0-产生式右部长度)}, ...]
+         */
+        this.LR0Items = [];
+
+        /**
+         * 项目集规范族
+         */
+        this.normalFamily = [];
+
+        /**
+         * action-goto表
+         */
+        this.actionGotoTable = new ActionGotoTable();
+
     }
 
     /**
-     * @function 判断是否是终结符
+     * 判断是否终结符
      * @param {string}symbol
-     * @return bool
+     * @return {boolean}
      */
     isTerminalSymbol(symbol) {
         if (symbol.length == 0) {
@@ -27,8 +64,7 @@ class Syntactic {
     }
 
     /**
-     * @function 产生产生式
-     * @param
+     * 产生产生式
      * @return promise
      */
     genProductions() {
@@ -68,18 +104,17 @@ class Syntactic {
             return resolve();
         });
     }
+
     /**
-     * @function 产生First集合
-     * @param
-     * @return promise
+     * 产生First集合
      */
     genFirstSet() {
         this.productions.forEach(production => {
             const left = production.left;
-            if(!this.firstSet[left]){
+            if (!this.firstSet[left]) {
                 this.firstSet[left] = [];
             }
-            if(production.right.indexOf('$')>=0){
+            if (production.right.indexOf('$') >= 0) {
                 this.firstSet[left].push('$');
             }
         });
@@ -91,7 +126,7 @@ class Syntactic {
                 for (let j = 0; j < production.right.length; j++) {
                     const rightSymbol = production.right[j];
 
-                    if(rightSymbol == '$'){
+                    if (rightSymbol == '$') {
                         break;
                     }
 
@@ -113,11 +148,11 @@ class Syntactic {
                         }
                     }
 
-                    if(this.firstSet[rightSymbol].indexOf('$')<0){
+                    if (this.firstSet[rightSymbol].indexOf('$') < 0) {
                         break;
                     }
 
-                    if(j+1 == production.right.length && this.firstSet[left].indexOf('$')<0){
+                    if (j + 1 == production.right.length && this.firstSet[left].indexOf('$') < 0) {
                         this.firstSet[left].push('$');
                         isChange = true;
                     }
@@ -131,35 +166,35 @@ class Syntactic {
     }
 
     /**
-     * @function 产生连续符号的First集合
+     * 产生连续符号的First集合
      * @param {array}symbols
      * @return {array}first集合
      */
-    genSymbolsFirstSet(symbols){
+    genSymbolsFirstSet(symbols) {
         let firstSet = [];
 
-        for(let i = 0;i<symbols.length;i++){
+        for (let i = 0; i < symbols.length; i++) {
             const symbol = symbols[i];
 
             // 若是终结符，则加入first集合后直接结束
-            if(this.isTerminalSymbol(symbol)){
+            if (this.isTerminalSymbol(symbol)) {
                 firstSet.push(symbol);
                 break;
             }
 
-            for(let j=0;j<this.firstSet[symbol].length;j++){
+            for (let j = 0; j < this.firstSet[symbol].length; j++) {
                 const firstSymbol = this.firstSet[symbol][j];
-                if(firstSymbol!='$' && firstSet.indexOf(firstSymbol)<0){
+                if (firstSymbol != '$' && firstSet.indexOf(firstSymbol) < 0) {
                     firstSet.push(firstSymbol);
                 }
             }
 
             // 当前符号的first集合没有$，则结束
-            if(this.firstSet[symbol].indexOf('$')<0){
+            if (this.firstSet[symbol].indexOf('$') < 0) {
                 break;
             }
 
-            if(i+1==symbols.length && firstSet.indexOf('$')<0){
+            if (i + 1 == symbols.length && firstSet.indexOf('$') < 0) {
                 firstSet.push('$');
             }
         }
@@ -167,70 +202,354 @@ class Syntactic {
     }
 
     /**
-     * @function 产生Follow集合
-     * @param
-     * @return 
+     * 产生Follow集合
      */
-    genFollowSet(){
+    genFollowSet() {
         this.productions.forEach(production => {
             const left = production.left;
-            if(!this.followSet[left]){
+            if (!this.followSet[left]) {
                 this.followSet[left] = [];
             }
         });
         this.followSet[this.productions[0].left].push('#');
 
-        while(true){
+        while (true) {
             let isChange = false;
-            for(let i = 0;i<this.productions.length;i++){
+            for (let i = 0; i < this.productions.length; i++) {
                 const production = this.productions[i];
                 const left = production.left;
-                for(let j = 0;j<production.right.length;j++){
+                for (let j = 0; j < production.right.length; j++) {
                     const rightSymbol = production.right[j];
-                    
+
                     // 终结符直接跳过
-                    if(this.isTerminalSymbol(rightSymbol)){
+                    if (this.isTerminalSymbol(rightSymbol)) {
                         continue;
                     }
 
                     // 求当前符号右侧符号串的first集合，满足要求则加入到follow集合中
-                    const symbolsFirstSet = this.genSymbolsFirstSet(production.right.slice(j+1));
-                    for(let k =0;k<symbolsFirstSet.length;k++){
-                        if(symbolsFirstSet[k]!='$' && this.followSet[rightSymbol].indexOf(symbolsFirstSet[k])<0){
+                    const symbolsFirstSet = this.genSymbolsFirstSet(production.right.slice(j + 1));
+                    for (let k = 0; k < symbolsFirstSet.length; k++) {
+                        if (symbolsFirstSet[k] != '$' && this.followSet[rightSymbol].indexOf(symbolsFirstSet[k]) < 0) {
                             this.followSet[rightSymbol].push(symbolsFirstSet[k]);
                             isChange = true;
                         }
                     }
 
                     // 当前符号右侧符号串的first集合为空或含$，则将产生式左部的follow集合加入到当前符号follow集合中
-                    if(symbolsFirstSet.length <= 0 || symbolsFirstSet.indexOf('$') >=0){
-                        for(let k = 0;k<this.followSet[left].length;k++){
-                            
-                            if(this.followSet[rightSymbol].indexOf(this.followSet[left][k])<0){
+                    if (symbolsFirstSet.length <= 0 || symbolsFirstSet.indexOf('$') >= 0) {
+                        for (let k = 0; k < this.followSet[left].length; k++) {
+
+                            if (this.followSet[rightSymbol].indexOf(this.followSet[left][k]) < 0) {
                                 this.followSet[rightSymbol].push(this.followSet[left][k]);
                                 isChange = true;
                             }
                         }
                     }
 
-
-
-
-
-
                 }
             }
-            if(!isChange){
+            if (!isChange) {
                 break;
             }
         }
     }
+
+    /**
+     * 产生LR(0)项目
+     */
+    genLR0Items() {
+        for (let i = 0; i < this.productions.length; i++) {
+            const production = this.productions[i];
+
+            // 若产生式右部为$，则圆点位置设置为-1
+            if (production.right == '$') {
+                this.LR0Items.push({
+                    proNum: i,
+                    pointPos: -1
+                });
+                continue;
+            }
+
+            const rightLength = production.right.length;
+            for (let j = 0; j <= rightLength; j++) {
+                this.LR0Items.push({
+                    proNum: i,
+                    pointPos: j
+                });
+            }
+        }
+    }
+
+    /**
+     * 产生某个项目的闭包集合
+     * @param {{proNum:number, pointPos:number}}LR0Item LR0项目
+     * @return {array}项目集合
+     */
+    genLR0ItemClosureSet(LR0Item) {
+        let itemStack = [];//暂存栈
+        let closureSet = [];//返回的闭包集合
+        itemStack.push(LR0Item);
+
+        while (itemStack.length) {
+            // 从栈中取出一个item
+            const item = itemStack.pop();
+            // 放入闭包集合中
+            closureSet.push(item);
+
+            // 空串项目跳过
+            if (item.pointPos == -1) {
+                continue;
+            }
+
+            // 规约项目跳过
+            if (item.pointPos == this.productions[item.proNum].right.length) {
+                continue;
+            }
+
+            // 圆点后为终结符跳过
+            if (this.isTerminalSymbol(this.productions[item.proNum].right[item.pointPos])) {
+                continue;
+            }
+
+            // 现在圆点后只能为非终结符
+            const currentSymbol = this.productions[item.proNum].right[item.pointPos];
+            for (let i = 0; i < this.LR0Items.length; i++) {
+                const t = this.LR0Items[i];
+                if (this.productions[t.proNum].left == currentSymbol && (t.pointPos == 0 || t.pointPos == -1)) {
+                    if (closureSet.indexOf(t) < 0) {
+                        itemStack.push(t);
+                    }
+                }
+            }
+
+        }
+        return closureSet;
+    }
+
+    /**
+     * 产生某个项目集的闭包集合
+     * @param {array}LR0Items LR0项目集
+     * @return {array}项目集合
+     */
+    genLR0ItemsClosureSet(LR0Items) {
+        let itemStack = [];//暂存栈
+        let closureSet = [];//返回的闭包集合
+        LR0Items.forEach(LR0Item => {
+            itemStack.push(LR0Item);
+        });
+
+        while (itemStack.length) {
+            // 从栈中取出一个item
+            const item = itemStack.pop();
+            // 放入闭包集合中
+            closureSet.push(item);
+
+            // 空串项目跳过
+            if (item.pointPos == -1) {
+                continue;
+            }
+
+            // 规约项目跳过
+            if (item.pointPos == this.productions[item.proNum].right.length) {
+                continue;
+            }
+
+            // 圆点后为终结符跳过
+            if (this.isTerminalSymbol(this.productions[item.proNum].right[item.pointPos])) {
+                continue;
+            }
+
+            // 现在圆点后只能为非终结符
+            const currentSymbol = this.productions[item.proNum].right[item.pointPos];
+            for (let i = 0; i < this.LR0Items.length; i++) {
+                const t = this.LR0Items[i];
+                if (this.productions[t.proNum].left == currentSymbol && (t.pointPos == 0 || t.pointPos == -1)) {
+                    if (closureSet.indexOf(t) < 0) {
+                        itemStack.push(t);
+                    }
+                }
+            }
+
+        }
+        return closureSet;
+    }
+
+    /**
+     * 产生项目集规范族
+     */
+    genNormalFamilySet() {
+        return new Promise((resolve, reject) => {
+            // 将起始符号的Closure作为第0个项目集规范族
+            let itemsStack = [];//itemsStack = [[LR0Item1, LR0Item2, ...], [], ...]
+            itemsStack.push(this.genLR0ItemClosureSet(this.LR0Items[0]));
+            this.normalFamily.push(itemsStack[0]);
+
+            while (itemsStack.length) {
+                // 取出一个项目集规范族
+                const normalItems = itemsStack.pop();
+                const currentState = this.indexNormalFamily(normalItems);
+                console.log('currentState');
+                console.log(currentState);
+
+                for (let i = 0; i < normalItems.length; i++) {
+                    const normalItem = normalItems[i];
+                    // 规约项目
+                    if (normalItem.pointPos == -1 || normalItem.pointPos == this.productions[normalItem.proNum].right.length) {
+                        const left = this.productions[normalItem.proNum].left;
+                        for (let j = 0; j < this.followSet[left].length; j++) {
+                            const followSymbol = this.followSet[left][j];
+
+                            // 若不存在映射
+                            if (!this.actionGotoTable.find(currentState, followSymbol)) {
+                                this.actionGotoTable.insert(currentState, followSymbol, { op: SLR_OP.CONCLUDE, statePro: normalItem.proNum });
+                            }
+                            // 若已存在映射
+                            else {
+                                if (JSON.stringify(this.actionGotoTable.value[currentState][followSymbol]) != JSON.stringify({ op: SLR_OP.CONCLUDE, statePro: normalItem.proNum })) {
+                                    return reject('不是SLR文法');
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        // 产生式右部圆点位置符号
+                        const currentRightSymbol = this.productions[normalItem.proNum].right[normalItem.pointPos];
+                        let itemsAccSameSym = [];//接受相同字符的item集合
+                        for (let j = 0; j < normalItems.length; j++) {
+                            const t = normalItems[j];
+                            if (t.pointPos == -1 || t.pointPos == this.productions[t.proNum].right.length) {
+                                continue;
+                            }
+                            if (this.productions[normalItem.proNum].right[normalItem.pointPos] ==
+                                this.productions[t.proNum].right[t.pointPos]) {
+                                itemsAccSameSym.push(this.getNextPointPosLR0Item(t));
+                            }
+                        }
+                        console.log('接受相同字符item');
+                        console.log(itemsAccSameSym);
+
+                        const nextNormalFamily = this.genLR0ItemsClosureSet(itemsAccSameSym);
+
+                        if (this.indexNormalFamily(nextNormalFamily) < 0) {
+                            this.normalFamily.push(nextNormalFamily);
+                            console.log(this.normalFamily);
+                            itemsStack.push(nextNormalFamily);
+                        }
+
+                        const nextState = this.indexNormalFamily(nextNormalFamily);
+                        if (!this.actionGotoTable.find(currentState, currentRightSymbol)) {
+                            this.actionGotoTable.insert(currentState, currentRightSymbol, { op: SLR_OP.MOVE, statePro: nextState });
+                        }
+                        else {
+                            if (JSON.stringify(this.actionGotoTable.value[currentState][currentRightSymbol]) != JSON.stringify({ op: SLR_OP.MOVE, statePro: nextState })) {
+                                console.log(this.actionGotoTable.value[currentState][currentRightSymbol]);
+                                console.log('nextState');
+                                console.log(nextState);
+                                reject('不是SLR文法');
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            let currentState2 = -1;
+            for (let i = 0; i < this.normalFamily.length; i++) {
+                for (let j = 0; j < this.normalFamily[i].length; j++) {
+                    if (JSON.stringify({ proNum: 0, pointPos: 1 }) == JSON.stringify(this.normalFamily[i][j])) {
+                        currentState2 = i;
+                        break;
+                    }
+                }
+                if (currentState2 >= 0) {
+                    break;
+                }
+            }
+            this.actionGotoTable.value[currentState2]['#'] = { op: SLR_OP.ACC, statePro: currentState2 };
+
+            return resolve();
+        });
+
+
+    }
+
+    /**
+     * 判断两个closureSet是否相等(js数组无法直接比较是否相等)
+     * @param {array}closureSet1
+     * @param {array}closureSet2
+     * @return {boolean}
+     */
+    isEqualclosureSet(closureSet1, closureSet2) {
+        function comp(a, b) {
+            if (a.proNum != b.proNum) {
+                return a.proNum - b.proNum;
+            }
+            return a.pointPos - b.pointPos;
+        }
+        const t1 = closureSet1.sort(comp);
+        const t2 = closureSet2.sort(comp);
+        return JSON.stringify(t1) == JSON.stringify(t2);
+    }
+
+    /**
+     * 索引规范族中的closureSet
+     * @param {array}closureSet
+     * @return {number}索引值，没有则为-1
+     */
+    indexNormalFamily(closureSet) {
+        for (let i = 0; i < this.normalFamily.length; i++) {
+            if (this.isEqualclosureSet(this.normalFamily[i], closureSet)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 求某个LR0项目圆点右移一位的项目
+     * @param {object}LR0Item
+     * @return {object}LR0Item
+     */
+    getNextPointPosLR0Item(LR0Item){
+        for(let i = 0;i<this.LR0Items.length;i++){
+            if(this.LR0Items[i].proNum == LR0Item.proNum && this.LR0Items[i].pointPos - LR0Item.pointPos==1){
+                return this.LR0Items[i];
+            }
+        }
+        return null;
+    }
+
+
 }
 
+class ActionGotoTable {
+    constructor(value = []) {
+        this.value = value;
+    }
+    insert(state, symbol, op_statePro) {
+        if (!this.value[state]) {
+            this.value[state] = [];
+        }
+        this.value[state][symbol] = op_statePro;
+    }
+    find(state, symbol) {
+        if (!this.value[state]) {
+            return false;
+        }
+        if (!this.value[state][symbol]) {
+            return false;
+        }
+        return true;
+    }
+}
 
-
-// var s = new Syntactic('123\t\n3243\ndf')
-// s.genProductions()
+const SLR_OP = {
+    CONCLUDE: 'CONCLUDE',
+    MOVE: 'MOVE',
+    ACC: 'ACC',
+    PUSHNT: 'PUSHNT',
+    ERR: 'ERR'
+}
 
 module.exports = Syntactic;
 
