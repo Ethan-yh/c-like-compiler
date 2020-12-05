@@ -292,14 +292,15 @@ a=program(a,b,demo(c))\n\
 return;\n\
 }\n\
 "
-lexAnalyzer.initLexAnalyzer(code)
-async function test() {
-    try{
-        let lexResult = await lexAnalyzer.getLexResult()
-        console.log(lexResult)
-    }
-    catch(err){
-        console.log(err)
-    }
-}
-test()
+// lexAnalyzer.initLexAnalyzer(code)
+// async function test() {
+//     try{
+//         let lexResult = await lexAnalyzer.getLexResult()
+//         console.log(lexResult)
+//     }
+//     catch(err){
+//         console.log(err)
+//     }
+// }
+// test()
+module.exports = LexicalAnalyzer
