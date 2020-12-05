@@ -90,28 +90,15 @@ class LexicalAnalyzer{
     }
 
     /**
-     * 返回词法分析出错的位置和原因
-     * @param {number} line
-     * @param {string} type
-     * @param {string} value
-     * @return {object}
-     */
-    reportError(line,type,value){
-        let error = {line: line, type: type, value: value}
-        console.log(error)
-        return error
-    }
-
-    /**
      * 得到代码中的下一个单词
      * @param
      * @return {object}
      */
-    getNextWord(){
+    async getNextWord(){
         let ch = ''
         let chNext = ''
         let str = ''
-        let word = {type: "", value: ""}
+        let word = {type: "", value: "", line: 0}
 
         while(true){
             ch = this.getNextChar()
@@ -124,13 +111,14 @@ class LexicalAnalyzer{
                     if(chNext == '#')
                         this.codeIndex--
                 }
-                else if(chNext == '*')
+                else if(chNext == '*'){
                     while(true){
                         do chNext = this.getNextChar()
                         while((chNext != '*') && (chNext != '#'))
                         if(chNext == '#'){
-                            this.reportError(this.lineCounter, "DELIMITER", "缺少界符 \"*/\"")
                             this.codeIndex--
+                            word.type = "LexError"
+                            word.value = "DELIMITER ERROR: 缺少界符 \"*/\""
                             break
                         }
                         if(this.getNextChar() == '/')
@@ -138,6 +126,10 @@ class LexicalAnalyzer{
                         else
                             this.codeIndex--
                     }
+                    if(word.type == "LexError")
+                        break
+                }
+                    
                 /*除号*/
                 else{
                     this.codeIndex--
@@ -152,8 +144,10 @@ class LexicalAnalyzer{
                     chNext = this.getNextChar()
                 }
                 this.codeIndex--
-                if(this.Keyword.includes(str))
-                    word.type = "KEYWORD"
+                if(this.Keyword.includes(str)){
+                    word.type = str
+                    str = "--"
+                }
                 else
                     word.type = "IDENTIFIER"
                 break
@@ -165,13 +159,13 @@ class LexicalAnalyzer{
                     chNext = this.getNextChar()
                 }
                 if(this.isLetter(chNext)){
-                    this.reportError(this.lineCounter, "IDENTIFIER", "标识符不能以数字开头!!!")
                     while(this.isLetter(chNext)){
                         str = str.concat(chNext)
                         chNext = this.getNextChar()
                     }
                     this.codeIndex--
-                    word.type = "ERROR"
+                    word.type = "LexError"
+                    word.value = "IDENTIFIER ERROR: 标识符不能以数字开头!!!"
                 }
                 else{
                     this.codeIndex--
@@ -186,28 +180,31 @@ class LexicalAnalyzer{
                         str = str.concat(chNext)
                     else{
                         if(ch == '!'){
-                            this.reportError(line, "OPERATOR", "\"!\" 不是操作符!!!")
                             this.codeIndex--
-                            word.type = "ERROR"
+                            word.type = "LexError"
+                            word.value = "OPERATOR ERROR: \"!\" 不是操作符!!!"
                         }
                         else{
                             this.codeIndex--
-                            word.type = "OPERATOR"
+                            word.type = str
+                            str = "--"
                         }
                     }
                 }
-                else
-                    word.type = "OPERATOR"
+                else{
+                    word.type = str
+                    str = "--"
+                }
                 break
             }
             else if(this.Delimiter.includes(ch)){
-                word.type = "DELIMITER"
+                word.type = str
+                str = "--"
                 break
             }
             else if(this.isBlank(ch))
                 continue
             else{
-                this.reportError(this.lineCounter, "UNKNOWN", "出现未知的词法错误!!!")
                 chNext = this.getNextChar()
                 while((chNext != '/') && !this.isLetter(chNext) && !this.isDigit(chNext) && !this.Operator() && !this.Delimiter() && !this.isBlank()){
                     str = str.concat(chNext)
@@ -215,10 +212,17 @@ class LexicalAnalyzer{
                 }
                 this.codeIndex--
                 word.type = "ERROR"
+                word.value = "UNKNOWN ERROR: 出现未知的单词!!!"
                 break
             }
         }
-        word.value = str
+        word.line = this.lineCounter
+        if(word.type == "LexError"){
+            word.value = str + " " + word.value
+            throw word
+        }
+        else
+            word.value = str
         return word
     }
 
@@ -227,11 +231,21 @@ class LexicalAnalyzer{
      * @param
      * @return {array}
      */
-    getLexResult(){
-        let word = {type: "", value: ""}
+    async getLexResult(){
+        let word = {type: "", value: "", line: 0}
         while(this.codeIndex < this.code.length){
-            word = this.getNextWord()
-            this.lexResult.push(word)
+            try{
+                word = await this.getNextWord()
+                if((word.type == '#') && (this.codeIndex < this.code.length)){
+                    word.type = "LexError"
+                    word.value = "END ERROR: \"#\" 应该出现在代码结尾处!!!"
+                    throw word
+                }
+                this.lexResult.push(word)
+            }
+            catch(err){
+                throw err
+            }
         }
         return this.lexResult
     }
@@ -279,4 +293,13 @@ return;\n\
 }\n\
 "
 lexAnalyzer.initLexAnalyzer(code)
-console.log(lexAnalyzer.getLexResult())
+async function test() {
+    try{
+        let lexResult = await lexAnalyzer.getLexResult()
+        console.log(lexResult)
+    }
+    catch(err){
+        console.log(err)
+    }
+}
+test()
