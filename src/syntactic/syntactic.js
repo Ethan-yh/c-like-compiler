@@ -42,6 +42,22 @@ class Syntactic {
          */
         this.actionGotoTable = new ActionGotoTable();
 
+        /**
+         * 状态栈
+         */
+        this.stateStack = [];
+
+        /**
+         * 符号栈
+         */
+        this.symbolStack = [];
+
+        /**
+         * 语法分析过程
+         */
+        this.analizeProcess = [];
+
+
     }
 
     /**
@@ -54,12 +70,8 @@ class Syntactic {
             return true;
         }
         if (symbol[0] >= 'A' && symbol[0] <= 'Z') {
-            // console.log(symbol);
-            // console.log('不是终结符')
-
             return false;
         }
-        // console.log('是终结符')
         return true;
     }
 
@@ -79,7 +91,7 @@ class Syntactic {
                 // 没有->，则直接返回
                 if (leftPos < 0) {
                     // console.log('error,某行产生式没有->');
-                    return reject(`产生式错误,第${i}行产生式没有->符号`);
+                    return reject({errType:'gramErr', errMsg:`文法错误：第${i}行产生式没有->符号`});
 
                 }
                 // console.log(leftPos);
@@ -103,6 +115,34 @@ class Syntactic {
             }
             return resolve();
         });
+    }
+
+    /**
+     * 检查产生式合法性
+     */
+    checkProductions(){
+        return new Promise((resolve, reject)=>{
+            for(let i=0;i<this.productions.length;i++){
+                for(let j=0;j<this.productions[i].right.length;j++){
+                    const symbol = this.productions[i].right[j];
+                    // 如果是非终结符，但是没有该非终结符的产生式，则产生式不合法
+                    if(!this.isTerminalSymbol(symbol)){
+                        let existFlag = false;
+                        for(let k =0;k<this.productions.length;k++){
+                            if(this.productions[k].left == symbol){
+                                existFlag = true;
+                                break;
+                            }
+                        }
+                        if(!existFlag){
+                            return reject({errType:'gramErr', errMsg:'文法错误：某个非终结符没有产生式'});
+                        }
+                    }
+                }
+            }
+            return resolve();
+        });
+        
     }
 
     /**
@@ -388,8 +428,6 @@ class Syntactic {
                 // 取出一个项目集规范族
                 const normalItems = itemsStack.pop();
                 const currentState = this.indexNormalFamily(normalItems);
-                console.log('currentState');
-                console.log(currentState);
 
                 for (let i = 0; i < normalItems.length; i++) {
                     const normalItem = normalItems[i];
@@ -406,7 +444,7 @@ class Syntactic {
                             // 若已存在映射
                             else {
                                 if (JSON.stringify(this.actionGotoTable.value[currentState][followSymbol]) != JSON.stringify({ op: SLR_OP.CONCLUDE, statePro: normalItem.proNum })) {
-                                    return reject('不是SLR文法');
+                                    return reject({errType:'gramErr', errMsg:`文法错误：不是SLR文法`});
                                 }
                             }
                         }
@@ -425,14 +463,11 @@ class Syntactic {
                                 itemsAccSameSym.push(this.getNextPointPosLR0Item(t));
                             }
                         }
-                        console.log('接受相同字符item');
-                        console.log(itemsAccSameSym);
 
                         const nextNormalFamily = this.genLR0ItemsClosureSet(itemsAccSameSym);
 
                         if (this.indexNormalFamily(nextNormalFamily) < 0) {
                             this.normalFamily.push(nextNormalFamily);
-                            console.log(this.normalFamily);
                             itemsStack.push(nextNormalFamily);
                         }
 
@@ -442,10 +477,7 @@ class Syntactic {
                         }
                         else {
                             if (JSON.stringify(this.actionGotoTable.value[currentState][currentRightSymbol]) != JSON.stringify({ op: SLR_OP.MOVE, statePro: nextState })) {
-                                console.log(this.actionGotoTable.value[currentState][currentRightSymbol]);
-                                console.log('nextState');
-                                console.log(nextState);
-                                reject('不是SLR文法');
+                                reject({errType:'gramErr', errMsg:`文法错误：不是SLR文法`});
                             }
                         }
                     }
@@ -519,9 +551,120 @@ class Syntactic {
         return null;
     }
 
+    /**
+     * 语法分析准备，即建立必要的集合
+     */
+    async preForSyntacticAnalyzer(){
+        try{
+            console.log('pre');
+            await this.genProductions();
+            console.log(this.productions);
+            await this.checkProductions();
+            this.genFirstSet();
+            this.genFollowSet();
+            this.genLR0Items();
+            await this.genNormalFamilySet();
+        }catch(err){
+            throw err;
+        }
+    }
+
+    /**
+     * 语法分析初始化
+     * @param {array}words
+     */
+    initAnalize(){
+        this.stateStack.length = 0;
+        this.stateStack.push(0);
+        this.symbolStack.length = 0;
+        this.symbolStack.push('#');
+    }
+
+    /**
+     * 开始语法分析
+     * @param {array}words
+     */
+    startAnalize(words){
+        this.initAnalize();
+        return new Promise((resolve, reject)=>{
+            let wordCount = 0;
+            while(true){
+                const word = words[wordCount++];
+                
+                while(true){
+                    console.log('当前word');
+                    console.log(word);
+                    // 取栈顶符号
+                    const currentState = this.stateStack[this.stateStack.length-1];
+                    if(!this.actionGotoTable.find(currentState, word.type)){
+                        return reject({errType:'synErr', errMsg:'语法分析过程出错：action-goto表中不含对应操作-1', word:word});
+                    }
+    
+                    // 移进
+                    if(this.actionGotoTable.value[currentState][word.type].op == SLR_OP.MOVE){
+                        
+                        const nextState = this.actionGotoTable.value[currentState][word.type].statePro;
+                        this.stateStack.push(nextState);
+                        console.log('移进');
+                        console.log('当前状态栈');
+                        console.log(this.stateStack);
+                        console.log('当前符号栈');
+                        console.log(this.symbolStack);
+                        break;
+                    }
+    
+                    // 规约
+                    else if(this.actionGotoTable.value[currentState][word.type].op == SLR_OP.CONCLUDE){
+                        console.log('规约');
+
+                        const proNum = this.actionGotoTable.value[currentState][word.type].statePro;
+                        let productionLen;
+                        if(this.productions[proNum].right[0]=='$'){
+                            productionLen = 0;
+                        }else{
+                            productionLen = this.productions[proNum].right.length;
+                        }
+                        // 弹出
+                        for(let i = 0;i<productionLen;i++){
+                            this.stateStack.pop();
+                            this.symbolStack.pop();
+                        }
+    
+                        this.symbolStack.push(this.productions[proNum].left);
+                        const newCurrentState = this.stateStack[this.stateStack.length-1];
+                        if(!this.actionGotoTable.find(newCurrentState, this.productions[proNum].left)){
+                            return reject({errType:'synErr', errMsg:'语法分析过程出错：action-goto表中不含对应操作-2'});
+                        }
+    
+                        this.stateStack.push(this.actionGotoTable.value[newCurrentState][this.productions[proNum].left].statePro);
+
+                        console.log('当前状态栈');
+                        console.log(this.stateStack);
+                        console.log('当前符号栈');
+                        console.log(this.symbolStack);
+
+
+                    }
+                    // 接受
+                    else if(this.actionGotoTable.value[currentState][word.type].op == SLR_OP.ACC){
+                        console.log('接受');
+
+                        return resolve();
+                    }
+                    else{
+                        return reject({errType:'synErr', errMsg:'语法分析过程出错'});
+                    }
+                }
+            }
+            
+        });
+        
+    }
+
 
 }
 
+/** action-goto表类 */
 class ActionGotoTable {
     constructor(value = []) {
         this.value = value;
@@ -543,6 +686,7 @@ class ActionGotoTable {
     }
 }
 
+/** SLR动作 */
 const SLR_OP = {
     CONCLUDE: 'CONCLUDE',
     MOVE: 'MOVE',

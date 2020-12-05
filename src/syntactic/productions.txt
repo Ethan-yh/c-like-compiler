@@ -4,17 +4,13 @@ Stmt_string->Stmt_loop Stmt
 
 Stmt_loop->Stmt_loop Stmt|$
 
-Stmt->int identifier Stmt_type|void identifier Create_Function_table Function_stmt
+Stmt->int identifier Stmt_type|void identifier Function_stmt
 
-Stmt_type->Variavle_stmt|Create_Function_table Function_stmt
-
-Create_Function_table->$
+Stmt_type->Variavle_stmt|Function_stmt
 
 Variavle_stmt->;
 
-Function_stmt->( Formal_parameter ) Sentence_block Exit_Function_table
-
-Exit_Function_table->$
+Function_stmt->( Formal_parameter ) Sentence_block
 
 Formal_parameter->Formal_parameter_list|void|$
 

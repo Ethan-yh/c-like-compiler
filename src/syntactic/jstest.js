@@ -1,7 +1,31 @@
-const a = {a:2, b:2};
-const b = {a:1, b:2};
-const t1 = [a, 1];
-const t2 = [1, a];
+const fs = require('fs');
 
-console.log(JSON.stringify(a));
 
+
+// lexAn().then(()=>{}).catch(res=>{console.log(res)});
+
+async function func1(){
+    try{
+        await lexAn();
+        const a = await A();
+        const b = await B();
+        const c = await C(a, b);
+    }catch(err){
+        console.log(err);
+    }
+}
+
+
+function lexAn(){
+    return new Promise((resolve, reject)=>{
+
+        return reject(1);
+    });
+}
+
+async function lexAn2(){
+    throw(1);
+    return 1;
+}
+
+console.log(lexAn2());
