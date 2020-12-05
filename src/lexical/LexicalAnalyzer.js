@@ -149,7 +149,7 @@ class LexicalAnalyzer{
                     str = "--"
                 }
                 else
-                    word.type = "IDENTIFIER"
+                    word.type = "identifier"
                 break
             }
             else if(this.isDigit(ch)){
@@ -169,7 +169,7 @@ class LexicalAnalyzer{
                 }
                 else{
                     this.codeIndex--
-                    word.type = "CONSTANT"
+                    word.type = "num"
                 }
                 break
             }
