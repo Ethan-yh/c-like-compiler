@@ -176,8 +176,11 @@ class LexicalAnalyzer{
             else if(this.isOperator(ch)){
                 if(ch == '=' || ch == '>' || ch == '<' || ch == '!'){
                     chNext = this.getNextChar()
-                    if(chNext == '=')
+                    if(chNext == '='){
                         str = str.concat(chNext)
+                        word.type = str
+                        str = "--"
+                    }
                     else{
                         if(ch == '!'){
                             this.codeIndex--
