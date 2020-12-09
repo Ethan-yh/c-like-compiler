@@ -1,5 +1,5 @@
 
-
+const actionFunctions = require('./ast.js');
 /**
  * 语法分析类
  */
@@ -48,11 +48,9 @@ class Syntactic {
         this.actionGotoTable = new ActionGotoTable();
 
         /**
-         * 语法分析准备好标志
+         * 语法分析准备的返回结果
          */
-        this.preFlag = false;
-
-
+        this.preRes = this.preForSyntacticAnalyzer();
     }
 
     /**
@@ -75,72 +73,87 @@ class Syntactic {
      * @return promise
      */
     genProductions() {
-        return new Promise((resolve, reject) => {
-            for (let i = 0; i < this.productionsLines.length; i++) {
-                const line = this.productionsLines[i];
-                if (line.length <= 0) {
-                    continue;
-                }
-                const leftPos = line.search('->');
+        for (let i = 0; i < this.productionsLines.length; i++) {
+            const line = this.productionsLines[i];
+            if (line.length <= 0) {
+                continue;
+            }
+            const leftPos = line.search('->');
 
-                // 没有->，则直接返回
-                if (leftPos < 0) {
-                    // console.log('error,某行产生式没有->');
-                    return reject({ errType: 'gramErr', errMsg: `文法错误：第${i}行产生式没有->符号` });
-
-                }
-                // console.log(leftPos);
-                const left = line.substring(0, leftPos);
-                // console.log(left);
-
-
-                // 产生式右边部分
-                const lineRightPart = line.substring(leftPos + 2);
-                // console.log(lineRightPart);
-                const rightsStr = lineRightPart.split('|');
-
-                rightsStr.forEach(rightStr => {
-                    const right = rightStr.split(' ');
-                    this.productions.push({
-                        left: left,
-                        right: right
-                    });
-                    this.productionsLinesOne.push(left+'->'+rightStr);
-                });
+            // 没有->，则直接返回
+            if (leftPos < 0) {
+                // console.log('error,某行产生式没有->');
+                return {
+                    isSucc: false,
+                    errType: 'gramErr',
+                    msg: `文法错误：第${i}行产生式没有->符号`
+                };
+                // return reject({ errType: 'gramErr', errMsg: `文法错误：第${i}行产生式没有->符号` });
 
             }
-            return resolve();
-        });
+            const left = line.substring(0, leftPos);
+
+
+
+            // 产生式右边部分
+            const lineRightPart = line.substring(leftPos + 2);
+            // console.log(lineRightPart);
+            const rightsStr = lineRightPart.split('|');
+
+            rightsStr.forEach((rightStr, index) => {
+                const right = rightStr.split(' ');
+                this.productions.push({
+                    left: left,
+                    right: right,
+                    rightNum: index
+                });
+                this.productionsLinesOne.push(left + '->' + rightStr);
+            });
+
+        }
+        return {
+            isSucc: true
+        };
     }
 
     /**
      * 检查产生式合法性
      */
     checkProductions() {
-        return new Promise((resolve, reject) => {
-            for (let i = 0; i < this.productions.length; i++) {
-                for (let j = 0; j < this.productions[i].right.length; j++) {
-                    const symbol = this.productions[i].right[j];
-                    // 如果是非终结符，但是没有该非终结符的产生式，则产生式不合法
-                    if (!this.isTerminalSymbol(symbol)) {
-                        let existFlag = false;
-                        for (let k = 0; k < this.productions.length; k++) {
-                            if (this.productions[k].left == symbol) {
-                                existFlag = true;
-                                break;
-                            }
-                        }
-                        if (!existFlag) {
-                            return reject({ errType: 'gramErr', errMsg: '文法错误：某个非终结符没有产生式' });
+        for (let i = 0; i < this.productions.length; i++) {
+            for (let j = 0; j < this.productions[i].right.length; j++) {
+                const symbol = this.productions[i].right[j];
+                // 如果是非终结符，但是没有该非终结符的产生式，则产生式不合法
+                if (!this.isTerminalSymbol(symbol)) {
+                    let existFlag = false;
+                    for (let k = 0; k < this.productions.length; k++) {
+                        if (this.productions[k].left == symbol) {
+                            existFlag = true;
+                            break;
                         }
                     }
-                    if (symbol == this.productions[0].left) {
-                        return reject({ errType: 'gramErr', errMsg: '文法错误：第一行产生式不是起始产生式' });
+                    if (!existFlag) {
+                        return {
+                            isSucc: false,
+                            errType: 'gramErr',
+                            msg: `文法错误：非终结符${symbol}没有产生式`
+                        };
+                        // return reject({ errType: 'gramErr', errMsg: `文法错误：非终结符${symbol}没有产生式` });
                     }
                 }
+                if (symbol == this.productions[0].left) {
+                    return {
+                        isSucc: false,
+                        errType: 'gramErr',
+                        msg: `文法错误：第一行产生式不是起始产生式`
+                    };
+                    // return reject({ errType: 'gramErr', errMsg: '文法错误：第一行产生式不是起始产生式' });
+                }
             }
-            return resolve();
-        });
+        }
+        return {
+            isSucc: true
+        };
 
     }
 
@@ -417,89 +430,97 @@ class Syntactic {
      * 产生项目集规范族
      */
     genNormalFamilySet() {
-        return new Promise((resolve, reject) => {
-            // 将起始符号的Closure作为第0个项目集规范族
-            let itemsStack = [];//itemsStack = [[LR0Item1, LR0Item2, ...], [], ...]
-            itemsStack.push(this.genLR0ItemClosureSet(this.LR0Items[0]));
-            this.normalFamily.push(itemsStack[0]);
+        // 将起始符号的Closure作为第0个项目集规范族
+        let itemsStack = [];//itemsStack = [[LR0Item1, LR0Item2, ...], [], ...]
+        itemsStack.push(this.genLR0ItemClosureSet(this.LR0Items[0]));
+        this.normalFamily.push(itemsStack[0]);
 
-            while (itemsStack.length) {
-                // 取出一个项目集规范族
-                const normalItems = itemsStack.pop();
-                const currentState = this.indexNormalFamily(normalItems);
+        while (itemsStack.length) {
+            // 取出一个项目集规范族
+            const normalItems = itemsStack.pop();
+            const currentState = this.indexNormalFamily(normalItems);
 
-                for (let i = 0; i < normalItems.length; i++) {
-                    const normalItem = normalItems[i];
-                    // 规约项目
-                    if (normalItem.pointPos == -1 || normalItem.pointPos == this.productions[normalItem.proNum].right.length) {
-                        const left = this.productions[normalItem.proNum].left;
-                        for (let j = 0; j < this.followSet[left].length; j++) {
-                            const followSymbol = this.followSet[left][j];
+            for (let i = 0; i < normalItems.length; i++) {
+                const normalItem = normalItems[i];
+                // 规约项目
+                if (normalItem.pointPos == -1 || normalItem.pointPos == this.productions[normalItem.proNum].right.length) {
+                    const left = this.productions[normalItem.proNum].left;
+                    for (let j = 0; j < this.followSet[left].length; j++) {
+                        const followSymbol = this.followSet[left][j];
 
-                            // 若不存在映射
-                            if (!this.actionGotoTable.find(currentState, followSymbol)) {
-                                this.actionGotoTable.insert(currentState, followSymbol, { op: SLR_OP.CONCLUDE, statePro: normalItem.proNum });
-                            }
-                            // 若已存在映射
-                            else {
-                                if (JSON.stringify(this.actionGotoTable.value[currentState][followSymbol]) != JSON.stringify({ op: SLR_OP.CONCLUDE, statePro: normalItem.proNum })) {
-                                    return reject({ errType: 'gramErr', errMsg: `文法错误：不是SLR文法` });
-                                }
+                        // 若不存在映射
+                        if (!this.actionGotoTable.find(currentState, followSymbol)) {
+                            this.actionGotoTable.insert(currentState, followSymbol, { op: SLR_OP.CONCLUDE, statePro: normalItem.proNum });
+                        }
+                        // 若已存在映射
+                        else {
+                            if (JSON.stringify(this.actionGotoTable.value[currentState][followSymbol]) != JSON.stringify({ op: SLR_OP.CONCLUDE, statePro: normalItem.proNum })) {
+                                return {
+                                    isSucc: false,
+                                    errType: 'gramErr',
+                                    msg: `文法错误：不是SLR文法。错误symbol:${followSymbol}`
+                                };
+                                // return reject({ errType: 'gramErr', errMsg: `文法错误：不是SLR文法。${followSymbol}` });
                             }
                         }
+                    }
+                }
+                else {
+                    // 产生式右部圆点位置符号
+                    const currentRightSymbol = this.productions[normalItem.proNum].right[normalItem.pointPos];
+                    let itemsAccSameSym = [];//接受相同字符的item集合
+                    for (let j = 0; j < normalItems.length; j++) {
+                        const t = normalItems[j];
+                        if (t.pointPos == -1 || t.pointPos == this.productions[t.proNum].right.length) {
+                            continue;
+                        }
+                        if (this.productions[normalItem.proNum].right[normalItem.pointPos] ==
+                            this.productions[t.proNum].right[t.pointPos]) {
+                            itemsAccSameSym.push(this.getNextPointPosLR0Item(t));
+                        }
+                    }
+
+                    const nextNormalFamily = this.genLR0ItemsClosureSet(itemsAccSameSym);
+
+                    if (this.indexNormalFamily(nextNormalFamily) < 0) {
+                        this.normalFamily.push(nextNormalFamily);
+                        itemsStack.push(nextNormalFamily);
+                    }
+
+                    const nextState = this.indexNormalFamily(nextNormalFamily);
+                    if (!this.actionGotoTable.find(currentState, currentRightSymbol)) {
+                        this.actionGotoTable.insert(currentState, currentRightSymbol, { op: SLR_OP.MOVE, statePro: nextState });
                     }
                     else {
-                        // 产生式右部圆点位置符号
-                        const currentRightSymbol = this.productions[normalItem.proNum].right[normalItem.pointPos];
-                        let itemsAccSameSym = [];//接受相同字符的item集合
-                        for (let j = 0; j < normalItems.length; j++) {
-                            const t = normalItems[j];
-                            if (t.pointPos == -1 || t.pointPos == this.productions[t.proNum].right.length) {
-                                continue;
-                            }
-                            if (this.productions[normalItem.proNum].right[normalItem.pointPos] ==
-                                this.productions[t.proNum].right[t.pointPos]) {
-                                itemsAccSameSym.push(this.getNextPointPosLR0Item(t));
-                            }
-                        }
-
-                        const nextNormalFamily = this.genLR0ItemsClosureSet(itemsAccSameSym);
-
-                        if (this.indexNormalFamily(nextNormalFamily) < 0) {
-                            this.normalFamily.push(nextNormalFamily);
-                            itemsStack.push(nextNormalFamily);
-                        }
-
-                        const nextState = this.indexNormalFamily(nextNormalFamily);
-                        if (!this.actionGotoTable.find(currentState, currentRightSymbol)) {
-                            this.actionGotoTable.insert(currentState, currentRightSymbol, { op: SLR_OP.MOVE, statePro: nextState });
-                        }
-                        else {
-                            if (JSON.stringify(this.actionGotoTable.value[currentState][currentRightSymbol]) != JSON.stringify({ op: SLR_OP.MOVE, statePro: nextState })) {
-                                reject({ errType: 'gramErr', errMsg: `文法错误：不是SLR文法` });
-                            }
+                        if (JSON.stringify(this.actionGotoTable.value[currentState][currentRightSymbol]) != JSON.stringify({ op: SLR_OP.MOVE, statePro: nextState })) {
+                            return {
+                                isSucc: false,
+                                errType: 'gramErr',
+                                msg: `文法错误：不是SLR文法。错误symbol:${currentRightSymbol}`
+                            };
+                            // reject({ errType: 'gramErr', errMsg: `文法错误：不是SLR文法${currentRightSymbol}` });
                         }
                     }
                 }
-
             }
 
-            let currentState2 = -1;
-            for (let i = 0; i < this.normalFamily.length; i++) {
-                for (let j = 0; j < this.normalFamily[i].length; j++) {
-                    if (JSON.stringify({ proNum: 0, pointPos: 1 }) == JSON.stringify(this.normalFamily[i][j])) {
-                        currentState2 = i;
-                        break;
-                    }
-                }
-                if (currentState2 >= 0) {
+        }
+
+        let currentState2 = -1;
+        for (let i = 0; i < this.normalFamily.length; i++) {
+            for (let j = 0; j < this.normalFamily[i].length; j++) {
+                if (JSON.stringify({ proNum: 0, pointPos: 1 }) == JSON.stringify(this.normalFamily[i][j])) {
+                    currentState2 = i;
                     break;
                 }
             }
-            this.actionGotoTable.value[currentState2]['#'] = { op: SLR_OP.ACC, statePro: currentState2 };
+            if (currentState2 >= 0) {
+                break;
+            }
+        }
+        this.actionGotoTable.value[currentState2]['#'] = { op: SLR_OP.ACC, statePro: currentState2 };
 
-            return resolve();
-        });
+        return { isSucc: true };
 
 
     }
@@ -553,137 +574,182 @@ class Syntactic {
     /**
      * 语法分析准备，即建立必要的集合
      */
-    async preForSyntacticAnalyzer() {
-        try {
-            await this.genProductions();
-            await this.checkProductions();
-            this.genFirstSet();
-            this.genFollowSet();
-            this.genLR0Items();
-            await this.genNormalFamilySet();
-            this.preFlag = true;
-        } catch (err) {
-            throw err;
+    preForSyntacticAnalyzer() {
+        // 若没有初始化产生式，则读默认产生式
+        if (!this.productionsLines.length) {
+            const grammar = require('./grammar.json');
+            this.productionsLines = grammar.productionsLines;
         }
+
+        // 产生产生式
+        let res;
+        res = this.genProductions();
+        if (!res.isSucc) {
+            return res;
+        }
+
+        // 检查产生式
+        res = this.checkProductions();
+        if (!res.isSucc) {
+            return res;
+        }
+
+        // 产生First集合
+        this.genFirstSet();
+
+        // 产生Follow集合
+        this.genFollowSet();
+
+        // 产生LR0项目
+        this.genLR0Items();
+
+        // 产生项目集规范族
+        res = this.genNormalFamilySet();
+        if (!res.isSucc) {
+            return res;
+        }
+
+        return { isSucc: true };
+
+        // try {
+        //     if (!this.productionsLines) {
+        //         const grammar = require('./grammar.json');
+        //         this.productionsLines = grammar.productionsLines;
+        //     }
+        //     await this.genProductions();
+        //     await this.checkProductions();
+        //     this.genFirstSet();
+        //     this.genFollowSet();
+        //     this.genLR0Items();
+        //     await this.genNormalFamilySet();
+        //     this.preFlag = true;
+        // } catch (err) {
+        //     throw err;
+        // }
     }
 
     /**
      * 开始语法分析
      * @param {array}words
      */
-    async startAnalize(words) {
-        try {
-            // 进行准备工作
-            if (!this.preFlag) {
-                await this.preForSyntacticAnalyzer();
-            }
-            // 进行初始化工作
-            let analizeProcess = [];//存放移进规约过程
-            let stateStack = [];
-            let symbolStack = [];
-            stateStack.length = 0;
-            stateStack.push(0);
-            symbolStack.length = 0;
-            symbolStack.push('#');
-            let wordCount = 0;
+    startAnalize(words) {
+        // 进行准备工作
+        if (!this.preRes.isSucc) {
+            return this.preRes;
+        }
+        // 进行初始化工作
+        let analizeProcess = [];//存放移进规约过程
+        let stateStack = [];
+        let symbolStack = [];
+        stateStack.length = 0;
+        stateStack.push(0);
+        symbolStack.length = 0;
+        symbolStack.push({ value: '#', loc: null });
+        let wordCount = 0;
+        while (true) {
+            const word = words[wordCount++];
+            const nextWord = words[wordCount];
+
             while (true) {
-                const word = words[wordCount++];
-                const nextWord = words[wordCount];
+                // 取栈顶符号
+                const currentState = stateStack[stateStack.length - 1];
+                if (!this.actionGotoTable.find(currentState, word.type)) {
+                    return {
+                        isSucc: false,
+                        errType: 'synErr',
+                        msg: '语法错误',
+                        errWord: word,
+                        analizeProcess: analizeProcess
+                    };
+                }
 
-                while (true) {
-                    // 取栈顶符号
-                    const currentState = stateStack[stateStack.length - 1];
-                    if (!this.actionGotoTable.find(currentState, word.type)) {
+                // 移进
+                if (this.actionGotoTable.value[currentState][word.type].op == SLR_OP.MOVE) {
+
+                    const nextState = this.actionGotoTable.value[currentState][word.type].statePro;
+                    stateStack.push(nextState);
+                    symbolStack.push({ value: word.value, loc: { start: null, end: null } });
+                    analizeProcess.push({
+                        action: '移进',
+                        stateStack: stateStack,
+                        symbolStack: symbolStack,
+                        nextWord: nextWord
+                    });
+                    break;
+                }
+
+                // 规约
+                else if (this.actionGotoTable.value[currentState][word.type].op == SLR_OP.CONCLUDE) {
+
+                    const proNum = this.actionGotoTable.value[currentState][word.type].statePro;
+                    let productionLen;
+                    if (this.productions[proNum].right[0] == '$') {
+                        productionLen = 0;
+                    } else {
+                        productionLen = this.productions[proNum].right.length;
+                    }
+                    const popSymbols = symbolStack.slice(stateStack.length - productionLen);
+                    const symbolStackItem = actionFunctions[this.productions[proNum].left][this.productions[proNum].rightNum](popSymbols);
+                    // 弹出
+                    for (let i = 0; i < productionLen; i++) {
+                        stateStack.pop();
+                        symbolStack.pop();
+                    }
+
+                    symbolStack.push(symbolStackItem);
+
+                    const newCurrentState = stateStack[stateStack.length - 1];
+                    if (!this.actionGotoTable.find(newCurrentState, this.productions[proNum].left)) {
                         return {
-                            isSucc:false,
-                            errType:'synErr',
-                            msg:'语法错误',
-                            analizeProcess:analizeProcess,
-                            errWord:word
+                            isSucc: false,
+                            errType: 'synErr',
+                            msg: '语法错误',
+                            errWord: word,
+                            analizeProcess: analizeProcess
                         };
                     }
 
-                    // 移进
-                    if (this.actionGotoTable.value[currentState][word.type].op == SLR_OP.MOVE) {
+                    stateStack.push(this.actionGotoTable.value[newCurrentState][this.productions[proNum].left].statePro);
 
-                        const nextState = this.actionGotoTable.value[currentState][word.type].statePro;
-                        stateStack.push(nextState);
-                        analizeProcess.push({
-                            action:'移进',
-                            stateStack:stateStack,
-                            symbolStack:symbolStack,
-                            nextWord:nextWord
-                        });
-                        break;
-                    }
+                    analizeProcess.push({
+                        action: `规约,${this.productionsLinesOne[proNum]}`,
+                        stateStack: stateStack,
+                        symbolStack: symbolStack,
+                        nextWord: word
+                    });
+                }
+                // 接受
+                else if (this.actionGotoTable.value[currentState][word.type].op == SLR_OP.ACC) {
+                    analizeProcess.push({
+                        action: '接受',
+                        stateStack: stateStack,
+                        symbolStack: symbolStack,
+                        nextWord: null
+                    });
 
-                    // 规约
-                    else if (this.actionGotoTable.value[currentState][word.type].op == SLR_OP.CONCLUDE) {
+                    const popSymbols = [symbolStack.pop()];
+                    const symbolStackItem = actionFunctions[this.productions[0].left][this.productions[0].rightNum](popSymbols);
 
-                        const proNum = this.actionGotoTable.value[currentState][word.type].statePro;
-                        let productionLen;
-                        if (this.productions[proNum].right[0] == '$') {
-                            productionLen = 0;
-                        } else {
-                            productionLen = this.productions[proNum].right.length;
-                        }
-                        // 弹出
-                        for (let i = 0; i < productionLen; i++) {
-                            stateStack.pop();
-                            symbolStack.pop();
-                        }
-
-                        symbolStack.push(this.productions[proNum].left);
-                        const newCurrentState = stateStack[stateStack.length - 1];
-                        if (!this.actionGotoTable.find(newCurrentState, this.productions[proNum].left)) {
-                            return {
-                                isSucc:false,
-                                errType:'synErr',
-                                msg:'语法错误',
-                                analizeProcess:analizeProcess,
-                                errWord:word
-                            };
-                        }
-
-                        stateStack.push(this.actionGotoTable.value[newCurrentState][this.productions[proNum].left].statePro);
-
-                        analizeProcess.push({
-                            action:`规约,${this.productionsLinesOne[proNum]}`,
-                            stateStack:stateStack,
-                            symbolStack:symbolStack,
-                            nextWord:word
-                        });
-                    }
-                    // 接受
-                    else if (this.actionGotoTable.value[currentState][word.type].op == SLR_OP.ACC) {
-                        analizeProcess.push({
-                            action:'接受',
-                            stateStack:stateStack,
-                            symbolStack:symbolStack,
-                            nextWord:null
-                        });
-                        return {
-                            isSucc:true,
-                            msg:'语法分析成功',
-                            analizeProcess:analizeProcess
-                            
-
-                        };
-                    }
-                    else {
-                        return {
-                            isSucc:false,
-                            errType:'synErr',
-                            msg:'语法错误',
-                            analizeProcess:analizeProcess,
-                            errWord:word
-                        };
-                    }
+                    symbolStack.push(symbolStackItem);
+                    return {
+                        isSucc: true,
+                        msg: '语法分析成功',
+                        analizeProcess: analizeProcess,
+                        ast: symbolStack[1].node
+                    };
+                }
+                else {
+                    return {
+                        isSucc: false,
+                        errType: 'synErr',
+                        msg: '语法错误',
+                        errWord: word,
+                        analizeProcess: analizeProcess
+                    };
                 }
             }
-        } catch (err) {
-            throw err;
         }
+
     }
 }
 
