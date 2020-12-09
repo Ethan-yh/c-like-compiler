@@ -1,0 +1,868 @@
+{
+  "type": "Program",
+  "loc": {
+    "start": null,
+    "end": null
+  },
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "loc": {
+        "start": null,
+        "end": null
+      },
+      "id": {
+        "type": "Identifier",
+        "loc": {
+          "start": null,
+          "end": null
+        },
+        "name": "a"
+      },
+      "kind": "--"
+    },
+    {
+      "type": "VariableDeclaration",
+      "loc": {
+        "start": null,
+        "end": null
+      },
+      "id": {
+        "type": "Identifier",
+        "loc": {
+          "start": null,
+          "end": null
+        },
+        "name": "b"
+      },
+      "kind": "--"
+    },
+    {
+      "type": "FunctionDeclaration",
+      "loc": {
+        "start": null,
+        "end": null
+      },
+      "id": {
+        "type": "Identifier",
+        "loc": {
+          "start": null,
+          "end": null
+        },
+        "name": "program"
+      },
+      "kind": "--",
+      "params": [
+        {
+          "type": "Identifier",
+          "loc": {
+            "start": null,
+            "end": null
+          },
+          "id": {
+            "type": "Identifier",
+            "loc": {
+              "start": null,
+              "end": null
+            },
+            "name": "a"
+          },
+          "kind": "--"
+        },
+        {
+          "type": "Identifier",
+          "loc": {
+            "start": null,
+            "end": null
+          },
+          "id": {
+            "type": "Identifier",
+            "loc": {
+              "start": null,
+              "end": null
+            },
+            "name": "b"
+          },
+          "kind": "--"
+        },
+        {
+          "type": "Identifier",
+          "loc": {
+            "start": null,
+            "end": null
+          },
+          "id": {
+            "type": "Identifier",
+            "loc": {
+              "start": null,
+              "end": null
+            },
+            "name": "c"
+          },
+          "kind": "--"
+        }
+      ],
+      "body": {
+        "type": "BlockStatement",
+        "loc": {
+          "start": null,
+          "end": null
+        },
+        "body": [
+          {
+            "type": "VariableDeclaration",
+            "loc": {
+              "start": null,
+              "end": null
+            },
+            "id": {
+              "type": "Identifier",
+              "loc": {
+                "start": null,
+                "end": null
+              },
+              "name": "i"
+            },
+            "kind": "--"
+          },
+          {
+            "type": "VariableDeclaration",
+            "loc": {
+              "start": null,
+              "end": null
+            },
+            "id": {
+              "type": "Identifier",
+              "loc": {
+                "start": null,
+                "end": null
+              },
+              "name": "j"
+            },
+            "kind": "--"
+          },
+          {
+            "type": "ExpressionStatement",
+            "loc": {
+              "start": null,
+              "end": null
+            },
+            "expression": {
+              "type": "AssignStatement",
+              "loc": {
+                "start": null,
+                "end": null
+              },
+              "operator": "=",
+              "left": {
+                "type": "Identifier",
+                "loc": {
+                  "start": null,
+                  "end": null
+                },
+                "name": "i"
+              },
+              "right": {
+                "type": "Literal",
+                "loc": {
+                  "start": null,
+                  "end": null
+                },
+                "value": "0"
+              }
+            }
+          },
+          {
+            "type": "ExpressionStatement",
+            "loc": {
+              "start": null,
+              "end": null
+            },
+            "expression": {
+              "type": "IfStatement",
+              "loc": {
+                "start": null,
+                "end": null
+              },
+              "test": {
+                "type": "BinaryExpression",
+                "loc": {
+                  "start": null,
+                  "end": null
+                },
+                "left": {
+                  "type": "Identifier",
+                  "loc": {
+                    "start": null,
+                    "end": null
+                  },
+                  "name": "a"
+                },
+                "operator": "--",
+                "right": {
+                  "type": "BinaryExpression",
+                  "loc": {
+                    "start": null,
+                    "end": null
+                  },
+                  "left": {
+                    "type": "Identifier",
+                    "loc": {
+                      "start": null,
+                      "end": null
+                    },
+                    "name": "b"
+                  },
+                  "operator": "+",
+                  "right": {
+                    "type": "Identifier",
+                    "loc": {
+                      "start": null,
+                      "end": null
+                    },
+                    "name": "c"
+                  }
+                }
+              },
+              "consequent": {
+                "type": "BlockStatement",
+                "loc": {
+                  "start": null,
+                  "end": null
+                },
+                "body": [
+                  {
+                    "type": "ExpressionStatement",
+                    "loc": {
+                      "start": null,
+                      "end": null
+                    },
+                    "expression": {
+                      "type": "AssignStatement",
+                      "loc": {
+                        "start": null,
+                        "end": null
+                      },
+                      "operator": "=",
+                      "left": {
+                        "type": "Identifier",
+                        "loc": {
+                          "start": null,
+                          "end": null
+                        },
+                        "name": "j"
+                      },
+                      "right": {
+                        "type": "BinaryExpression",
+                        "loc": {
+                          "start": null,
+                          "end": null
+                        },
+                        "left": {
+                          "type": "Identifier",
+                          "loc": {
+                            "start": null,
+                            "end": null
+                          },
+                          "name": "a"
+                        },
+                        "operator": "+",
+                        "right": {
+                          "type": "BinaryExpression",
+                          "loc": {
+                            "start": null,
+                            "end": null
+                          },
+                          "left": {
+                            "type": "BinaryExpression",
+                            "loc": {
+                              "start": null,
+                              "end": null
+                            },
+                            "left": {
+                              "type": "Identifier",
+                              "loc": {
+                                "start": null,
+                                "end": null
+                              },
+                              "name": "b"
+                            },
+                            "operator": "*",
+                            "right": {
+                              "type": "Identifier",
+                              "loc": {
+                                "start": null,
+                                "end": null
+                              },
+                              "name": "c"
+                            }
+                          },
+                          "operator": "+",
+                          "right": {
+                            "type": "Literal",
+                            "loc": {
+                              "start": null,
+                              "end": null
+                            },
+                            "value": "1"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              "alternate": {
+                "type": "BlockStatement",
+                "loc": {
+                  "start": null,
+                  "end": null
+                },
+                "body": [
+                  {
+                    "type": "ExpressionStatement",
+                    "loc": {
+                      "start": null,
+                      "end": null
+                    },
+                    "expression": {
+                      "type": "AssignStatement",
+                      "loc": {
+                        "start": null,
+                        "end": null
+                      },
+                      "operator": "=",
+                      "left": {
+                        "type": "Identifier",
+                        "loc": {
+                          "start": null,
+                          "end": null
+                        },
+                        "name": "j"
+                      },
+                      "right": {
+                        "type": "Identifier",
+                        "loc": {
+                          "start": null,
+                          "end": null
+                        },
+                        "name": "a"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "ExpressionStatement",
+            "loc": {
+              "start": null,
+              "end": null
+            },
+            "expression": {
+              "type": "WhileStatement",
+              "loc": {
+                "start": null,
+                "end": null
+              },
+              "test": {
+                "type": "BinaryExpression",
+                "loc": {
+                  "start": null,
+                  "end": null
+                },
+                "left": {
+                  "type": "Identifier",
+                  "loc": {
+                    "start": null,
+                    "end": null
+                  },
+                  "name": "i"
+                },
+                "operator": "--",
+                "right": {
+                  "type": "Literal",
+                  "loc": {
+                    "start": null,
+                    "end": null
+                  },
+                  "value": "100"
+                }
+              },
+              "body": {
+                "type": "BlockStatement",
+                "loc": {
+                  "start": null,
+                  "end": null
+                },
+                "body": [
+                  {
+                    "type": "ExpressionStatement",
+                    "loc": {
+                      "start": null,
+                      "end": null
+                    },
+                    "expression": {
+                      "type": "AssignStatement",
+                      "loc": {
+                        "start": null,
+                        "end": null
+                      },
+                      "operator": "=",
+                      "left": {
+                        "type": "Identifier",
+                        "loc": {
+                          "start": null,
+                          "end": null
+                        },
+                        "name": "i"
+                      },
+                      "right": {
+                        "type": "BinaryExpression",
+                        "loc": {
+                          "start": null,
+                          "end": null
+                        },
+                        "left": {
+                          "type": "Identifier",
+                          "loc": {
+                            "start": null,
+                            "end": null
+                          },
+                          "name": "j"
+                        },
+                        "operator": "*",
+                        "right": {
+                          "type": "Literal",
+                          "loc": {
+                            "start": null,
+                            "end": null
+                          },
+                          "value": "2"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "ExpressionStatement",
+            "loc": {
+              "start": null,
+              "end": null
+            },
+            "expression": {
+              "type": "ReturnStatement",
+              "loc": {
+                "start": null,
+                "end": null
+              },
+              "argument": {
+                "type": "Identifier",
+                "loc": {
+                  "start": null,
+                  "end": null
+                },
+                "name": "i"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "FunctionDeclaration",
+      "loc": {
+        "start": null,
+        "end": null
+      },
+      "id": {
+        "type": "Identifier",
+        "loc": {
+          "start": null,
+          "end": null
+        },
+        "name": "demo"
+      },
+      "kind": "--",
+      "params": [
+        {
+          "type": "Identifier",
+          "loc": {
+            "start": null,
+            "end": null
+          },
+          "id": {
+            "type": "Identifier",
+            "loc": {
+              "start": null,
+              "end": null
+            },
+            "name": "a"
+          },
+          "kind": "--"
+        }
+      ],
+      "body": {
+        "type": "BlockStatement",
+        "loc": {
+          "start": null,
+          "end": null
+        },
+        "body": [
+          {
+            "type": "ExpressionStatement",
+            "loc": {
+              "start": null,
+              "end": null
+            },
+            "expression": {
+              "type": "AssignStatement",
+              "loc": {
+                "start": null,
+                "end": null
+              },
+              "operator": "=",
+              "left": {
+                "type": "Identifier",
+                "loc": {
+                  "start": null,
+                  "end": null
+                },
+                "name": "a"
+              },
+              "right": {
+                "type": "BinaryExpression",
+                "loc": {
+                  "start": null,
+                  "end": null
+                },
+                "left": {
+                  "type": "Identifier",
+                  "loc": {
+                    "start": null,
+                    "end": null
+                  },
+                  "name": "a"
+                },
+                "operator": "+",
+                "right": {
+                  "type": "Literal",
+                  "loc": {
+                    "start": null,
+                    "end": null
+                  },
+                  "value": "2"
+                }
+              }
+            }
+          },
+          {
+            "type": "ExpressionStatement",
+            "loc": {
+              "start": null,
+              "end": null
+            },
+            "expression": {
+              "type": "ReturnStatement",
+              "loc": {
+                "start": null,
+                "end": null
+              },
+              "argument": {
+                "type": "BinaryExpression",
+                "loc": {
+                  "start": null,
+                  "end": null
+                },
+                "left": {
+                  "type": "Identifier",
+                  "loc": {
+                    "start": null,
+                    "end": null
+                  },
+                  "name": "a"
+                },
+                "operator": "*",
+                "right": {
+                  "type": "Literal",
+                  "loc": {
+                    "start": null,
+                    "end": null
+                  },
+                  "value": "2"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "FunctionDeclaration",
+      "loc": {
+        "start": null,
+        "end": null
+      },
+      "id": {
+        "type": "Identifier",
+        "loc": {
+          "start": null,
+          "end": null
+        },
+        "name": "main"
+      },
+      "kind": "--",
+      "params": [],
+      "body": {
+        "type": "BlockStatement",
+        "loc": {
+          "start": null,
+          "end": null
+        },
+        "body": [
+          {
+            "type": "VariableDeclaration",
+            "loc": {
+              "start": null,
+              "end": null
+            },
+            "id": {
+              "type": "Identifier",
+              "loc": {
+                "start": null,
+                "end": null
+              },
+              "name": "a"
+            },
+            "kind": "--"
+          },
+          {
+            "type": "VariableDeclaration",
+            "loc": {
+              "start": null,
+              "end": null
+            },
+            "id": {
+              "type": "Identifier",
+              "loc": {
+                "start": null,
+                "end": null
+              },
+              "name": "b"
+            },
+            "kind": "--"
+          },
+          {
+            "type": "VariableDeclaration",
+            "loc": {
+              "start": null,
+              "end": null
+            },
+            "id": {
+              "type": "Identifier",
+              "loc": {
+                "start": null,
+                "end": null
+              },
+              "name": "c"
+            },
+            "kind": "--"
+          },
+          {
+            "type": "ExpressionStatement",
+            "loc": {
+              "start": null,
+              "end": null
+            },
+            "expression": {
+              "type": "AssignStatement",
+              "loc": {
+                "start": null,
+                "end": null
+              },
+              "operator": "=",
+              "left": {
+                "type": "Identifier",
+                "loc": {
+                  "start": null,
+                  "end": null
+                },
+                "name": "a"
+              },
+              "right": {
+                "type": "Literal",
+                "loc": {
+                  "start": null,
+                  "end": null
+                },
+                "value": "3"
+              }
+            }
+          },
+          {
+            "type": "ExpressionStatement",
+            "loc": {
+              "start": null,
+              "end": null
+            },
+            "expression": {
+              "type": "AssignStatement",
+              "loc": {
+                "start": null,
+                "end": null
+              },
+              "operator": "=",
+              "left": {
+                "type": "Identifier",
+                "loc": {
+                  "start": null,
+                  "end": null
+                },
+                "name": "b"
+              },
+              "right": {
+                "type": "Literal",
+                "loc": {
+                  "start": null,
+                  "end": null
+                },
+                "value": "4"
+              }
+            }
+          },
+          {
+            "type": "ExpressionStatement",
+            "loc": {
+              "start": null,
+              "end": null
+            },
+            "expression": {
+              "type": "AssignStatement",
+              "loc": {
+                "start": null,
+                "end": null
+              },
+              "operator": "=",
+              "left": {
+                "type": "Identifier",
+                "loc": {
+                  "start": null,
+                  "end": null
+                },
+                "name": "c"
+              },
+              "right": {
+                "type": "Literal",
+                "loc": {
+                  "start": null,
+                  "end": null
+                },
+                "value": "2"
+              }
+            }
+          },
+          {
+            "type": "ExpressionStatement",
+            "loc": {
+              "start": null,
+              "end": null
+            },
+            "expression": {
+              "type": "AssignStatement",
+              "loc": {
+                "start": null,
+                "end": null
+              },
+              "operator": "=",
+              "left": {
+                "type": "Identifier",
+                "loc": {
+                  "start": null,
+                  "end": null
+                },
+                "name": "a"
+              },
+              "right": {
+                "type": "CallExpression",
+                "loc": {
+                  "start": null,
+                  "end": null
+                },
+                "callee": {
+                  "type": "Identifier",
+                  "loc": {
+                    "start": null,
+                    "end": null
+                  },
+                  "name": "program"
+                },
+                "args": [
+                  {
+                    "type": "Identifier",
+                    "loc": {
+                      "start": null,
+                      "end": null
+                    },
+                    "name": "a"
+                  },
+                  {
+                    "type": "Identifier",
+                    "loc": {
+                      "start": null,
+                      "end": null
+                    },
+                    "name": "b"
+                  },
+                  {
+                    "type": "CallExpression",
+                    "loc": {
+                      "start": null,
+                      "end": null
+                    },
+                    "callee": {
+                      "type": "Identifier",
+                      "loc": {
+                        "start": null,
+                        "end": null
+                      },
+                      "name": "demo"
+                    },
+                    "args": [
+                      {
+                        "type": "Identifier",
+                        "loc": {
+                          "start": null,
+                          "end": null
+                        },
+                        "name": "c"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "ExpressionStatement",
+            "loc": {
+              "start": null,
+              "end": null
+            },
+            "expression": {
+              "type": "ReturnStatement",
+              "loc": {
+                "start": null,
+                "end": null
+              },
+              "argument": null
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

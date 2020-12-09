@@ -42,10 +42,7 @@ return;\n\
 }\n\
 "
 
-let lexical = new Lexical();
-lexical.initLexAnalyzer(code);
 
-let syntactic;
 
 
 // 读取产生式文件
@@ -53,7 +50,7 @@ const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
 
-const filePath = path.resolve(__dirname, './syntactic/productions.txt')
+const filePath = path.resolve(__dirname, './syntactic/productionsNew.txt')
 
 var readStream = fs.createReadStream(filePath);
 
@@ -67,26 +64,44 @@ rl.on('line', (line) => {
     productionsLines.push(line);
 });
 
-rl.on('close',async()=>{
+rl.on('close', async () => {
     console.log('读取完毕');
-    syntactic = new Syntactic(productionsLines);
-    test();
+    // syntactic = new Syntactic(productionsLines);
+    // test();
 })
 
 
 // 测试函数
-async function test(){
-    try{
+async function test() {
+    try {
+        let lexical = new Lexical();
+        lexical.initLexAnalyzer(code);
         let lexResult = await lexical.getLexResult();
         console.log(lexResult);
-        await syntactic.preForSyntacticAnalyzer();
-        await syntactic.startAnalize(lexResult);
+
+        let syntactic = new Syntactic(productionsLines);
+        const synResult = syntactic.startAnalize(lexResult);
+        // console.log(syntactic.productions);
+        // console.log(syntactic.normalFamily);
+        // console.log(syntactic.actionGotoTable.value);
 
 
-    }catch(err){
+        console.log(synResult);
+
+        // console.log(synResult.analizeProcess.pop())
+        // console.log(synResult.analizeProcess.pop())
+
+        // console.log(synResult.cst);
+        fs.writeFileSync('./ast.json', JSON.stringify(synResult.ast, null, 2));
+
+
+
+    } catch (err) {
         console.log(err);
     }
 }
+
+test();
 
 
 
