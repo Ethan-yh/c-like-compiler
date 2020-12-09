@@ -44,33 +44,6 @@ return;\n\
 
 
 
-
-// 读取产生式文件
-const fs = require('fs');
-const path = require('path');
-const readline = require('readline');
-
-const filePath = path.resolve(__dirname, './syntactic/productionsNew.txt')
-
-var readStream = fs.createReadStream(filePath);
-
-let rl = readline.createInterface({
-    input: readStream
-});
-
-let productionsLines = [];
-
-rl.on('line', (line) => {
-    productionsLines.push(line);
-});
-
-rl.on('close', async () => {
-    console.log('读取完毕');
-    // syntactic = new Syntactic(productionsLines);
-    // test();
-})
-
-
 // 测试函数
 async function test() {
     try {
@@ -81,20 +54,10 @@ async function test() {
 
         let syntactic = new Syntactic(productionsLines);
         const synResult = syntactic.startAnalize(lexResult);
-        // console.log(syntactic.productions);
-        // console.log(syntactic.normalFamily);
-        // console.log(syntactic.actionGotoTable.value);
-
 
         console.log(synResult);
 
-        // console.log(synResult.analizeProcess.pop())
-        // console.log(synResult.analizeProcess.pop())
-
-        // console.log(synResult.cst);
         fs.writeFileSync('./ast.json', JSON.stringify(synResult.ast, null, 2));
-
-
 
     } catch (err) {
         console.log(err);
