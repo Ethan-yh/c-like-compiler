@@ -248,9 +248,12 @@ class LexicalAnalyzer{
     /**
      * 得到代码的词法分析结果
      * @param
-     * @return {array}
+     * @return {object}
      */
     getLexResult(){
+        let result = {}
+        result.isScc = true
+        result.msg = "词法分析成功"
         let word = {
             type: "",
             value: "",
@@ -273,8 +276,13 @@ class LexicalAnalyzer{
                 word.value = "\"#\" 应该出现在代码结尾处!!!"
             }
             lexResult.push(word)
-            if(word.type == "ERROR")
+            if(word.type == "ERROR"){
+                result.isScc = false
+                result.errType = "lexErr"
+                result.msg = "词法分析错误"
+                result.loc = word.loc
                 break
+            }
             if((word.type != '#') && (this.codeIndex == this.code.length)){
                 let word2 = {
                         type: "",
@@ -299,15 +307,19 @@ class LexicalAnalyzer{
                 lexResult.push(word2)
             }
         }
-        return lexResult
+        result.lexResult = lexResult
+        return result
     }
 
     /**
      * 通过词法正则表达式得到词法翻译结果
      * @param
-     * @return {array}
+     * @return {object}
      */
     getLexResultByRegex(){
+        let result = {}
+        result.isScc = true
+        result.msg = "词法分析成功"
         let str = this.code
         let lexResult = []
         while(str.length > 0){
@@ -424,8 +436,13 @@ class LexicalAnalyzer{
                 word.value = "\"#\" 应该出现在代码结尾处!!!"
             }
             lexResult.push(word)
-            if(word.type == "ERROR")
+            if(word.type == "ERROR"){
+                result.isScc = false
+                result.errType = "lexErr"
+                result.msg = "词法分析错误"
+                result.loc = word.loc
                 break
+            }
             if((word.type != '#') && str.length == 0){
                 let word2 = {
                     type: "",
@@ -450,7 +467,8 @@ class LexicalAnalyzer{
                 lexResult.push(word2)
             }
         }
-        return lexResult
+        result.lexResult = lexResult
+        return result
     }
 
 }
@@ -503,8 +521,8 @@ code2 = "1"
 lexAnalyzer.initLexAnalyzer(code)
 
 function test() {
-    let lexResult = lexAnalyzer.getLexResult() 
-    console.log(lexResult)
+    let result = lexAnalyzer.getLexResult() 
+    console.log(result)
 }
 
 test()
