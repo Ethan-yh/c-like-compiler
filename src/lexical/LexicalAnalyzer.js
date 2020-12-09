@@ -16,6 +16,8 @@ class LexicalAnalyzer{
     codeIndex = 0   //代码索引
     line = 1        //当前词法分析所在行(从'1'开始)
     col = 1         //当前词法分析所在列(从'1'开始)
+    oldline = 0
+    oldcol = 0
 
     /**
      * 初始化词法分析器
@@ -84,6 +86,8 @@ class LexicalAnalyzer{
      */
     getNextChar(){
         let ch = ''
+        this.oldline = this.line
+        this.oldcol = this.col
         if(this.codeIndex == this.code.length)
             ch = '#'
         else{
@@ -235,9 +239,14 @@ class LexicalAnalyzer{
                 break
             }
         }
-        if(!this.Delimiter.includes(word.type) && !this.isOperator(word.type[0])){
+        if(!this.Delimiter.includes(word.type) && !this.isOperator(word.type[0]) && this.codeIndex != this.code.length){
             this.codeIndex--
-            this.col--
+            if(code[this.codeIndex] == '\n'){
+                this.line = this.oldline
+                this.col = this.oldcol
+            }
+            else
+                this.col--
         }
         word.loc.end.line = this.line
         word.loc.end.col = this.col
@@ -516,7 +525,7 @@ return;\n\
 "
 
 let lexAnalyzer = new LexicalAnalyzer()
-code2 = "1"
+code2 = "else\n"
 
 lexAnalyzer.initLexAnalyzer(code)
 
