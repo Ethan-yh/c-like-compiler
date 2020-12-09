@@ -252,7 +252,7 @@ class LexicalAnalyzer{
      */
     getLexResult(){
         let result = {}
-        result.isScc = true
+        result.isSucc = true
         result.msg = "词法分析成功"
         let word = {
             type: "",
@@ -277,7 +277,7 @@ class LexicalAnalyzer{
             }
             lexResult.push(word)
             if(word.type == "ERROR"){
-                result.isScc = false
+                result.isSucc = false
                 result.errType = "lexErr"
                 result.msg = "词法分析错误"
                 result.loc = word.loc
@@ -318,7 +318,7 @@ class LexicalAnalyzer{
      */
     getLexResultByRegex(){
         let result = {}
-        result.isScc = true
+        result.isSucc = true
         result.msg = "词法分析成功"
         let str = this.code
         let lexResult = []
@@ -437,7 +437,7 @@ class LexicalAnalyzer{
             }
             lexResult.push(word)
             if(word.type == "ERROR"){
-                result.isScc = false
+                result.isSucc = false
                 result.errType = "lexErr"
                 result.msg = "词法分析错误"
                 result.loc = word.loc
