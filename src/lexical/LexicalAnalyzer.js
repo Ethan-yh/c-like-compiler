@@ -349,17 +349,15 @@ class LexicalAnalyzer{
                     str = str.replace(/^ /, "")
                     this.col++
                 }
-                else if(str[0] == '\t'){
-                    str = str.replace(/^\t/, "")
-                    this.col += 6 - this.col % 4
-                }
                 else if(str[0] == '\n'){
                     str = str.replace(/^\n/, "")
                     this.line++
                     this.col = 1
                 }
-                else
-                    str.replace(/^\t/, "")
+                else{
+                    str.replace(/^(\r|\t)/, "")
+                    this.col++
+                }
             }
             word.loc.start.line = this.line
             word.loc.start.col = this.col

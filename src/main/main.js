@@ -1,4 +1,4 @@
-const { app, ipcMain, BrowserWindow, Notification } = require('electron')
+const { app, dialog, ipcMain, BrowserWindow, Notification } = require('electron')
 const path = require('path')
 const fs = require('fs')
 
@@ -28,14 +28,10 @@ app.on('activate', () => {
     }
 })
 
-// ipcMain.on('asynchronous-message', (event, arg) => {
-//     console.log(arg) // prints "ping"
-//     event.reply('asynchronous-reply', 'pong')
-//   })
-  
-// ipcMain.on('synchronous-message', (event, arg) => {
-//     console.log(arg) // prints "ping"
-//     event.returnValue = 'pong'
-// })
+ipcMain.on('读文件', (event, arg) => {
+    let filePath = dialog.showOpenDialogSync({ properties: ['openFile'] })
+    let code = fs.readFileSync(filePath[0]);
+    event.returnValue = code.toString()
+  })
 
 // const root = fs.readdirSync('/')
