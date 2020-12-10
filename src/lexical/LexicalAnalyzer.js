@@ -94,13 +94,11 @@ class LexicalAnalyzer{
             ch = this.code[this.codeIndex]
             this.codeIndex++
         }
-        if(ch == '\t')
-            this.col += 6 - this.col % 4
-        else if(ch == '\n'){
+        if(ch == '\n'){
             this.line++
             this.col = 1
         }
-        else if(ch != '\r')
+        else
             this.col++
         return ch
     }
@@ -239,7 +237,7 @@ class LexicalAnalyzer{
                 break
             }
         }
-        if(!this.Delimiter.includes(word.type) && !this.isOperator(word.type[0]) && this.codeIndex != this.code.length){
+        if(!this.Delimiter.includes(word.type) && !this.isOperator(word.type[0]) && this.codeIndex != this.code.length ){
             this.codeIndex--
             if(code[this.codeIndex] == '\n'){
                 this.line = this.oldline

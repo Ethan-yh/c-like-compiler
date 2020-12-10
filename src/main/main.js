@@ -1,5 +1,6 @@
-const { app, BrowserWindow } = require('electron')
+const { app, ipcMain, BrowserWindow, Notification } = require('electron')
 const path = require('path')
+const fs = require('fs')
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -26,3 +27,15 @@ app.on('activate', () => {
         createWindow()
     }
 })
+
+// ipcMain.on('asynchronous-message', (event, arg) => {
+//     console.log(arg) // prints "ping"
+//     event.reply('asynchronous-reply', 'pong')
+//   })
+  
+// ipcMain.on('synchronous-message', (event, arg) => {
+//     console.log(arg) // prints "ping"
+//     event.returnValue = 'pong'
+// })
+
+// const root = fs.readdirSync('/')
