@@ -4,7 +4,7 @@ const actionFunctions = require('./ast.js');
  * 语法分析类
  */
 class Syntactic {
-    constructor(productionsLines) {
+    constructor(productionsLines = []) {
         /**
          * 产生式文本行
          */
@@ -641,10 +641,12 @@ class Syntactic {
         let analizeProcess = [];//存放移进规约过程
         let stateStack = [];
         let symbolStack = [];
+        let astNodeStack = [];
         stateStack.length = 0;
         stateStack.push(0);
         symbolStack.length = 0;
         symbolStack.push({ value: '#', loc: null });
+        astNodeStack.push({ name: '#' });
         let wordCount = 0;
         while (true) {
             const word = words[wordCount++];
@@ -668,7 +670,8 @@ class Syntactic {
 
                     const nextState = this.actionGotoTable.value[currentState][word.type].statePro;
                     stateStack.push(nextState);
-                    symbolStack.push({ value: word.value, loc: { start: null, end: null } });
+                    symbolStack.push({ value: word.value, loc: word.loc });
+                    astNodeStack.push({ name: word.value });
                     analizeProcess.push({
                         action: '移进',
                         stateStack: stateStack,
@@ -690,12 +693,15 @@ class Syntactic {
                     }
                     const popSymbols = symbolStack.slice(stateStack.length - productionLen);
                     const symbolStackItem = actionFunctions[this.productions[proNum].left][this.productions[proNum].rightNum](popSymbols);
+                    const popAstNodes = astNodeStack.slice(astNodeStack.length - productionLen);
                     // 弹出
                     for (let i = 0; i < productionLen; i++) {
                         stateStack.pop();
                         symbolStack.pop();
+                        astNodeStack.pop();
                     }
 
+                    astNodeStack.push({ name: this.productions[proNum].left, children: popAstNodes });
                     symbolStack.push(symbolStackItem);
 
                     const newCurrentState = stateStack[stateStack.length - 1];
@@ -726,15 +732,19 @@ class Syntactic {
                         symbolStack: symbolStack,
                         nextWord: null
                     });
-
+                    // 使用产生式0规约
                     const popSymbols = [symbolStack.pop()];
                     const symbolStackItem = actionFunctions[this.productions[0].left][this.productions[0].rightNum](popSymbols);
-
                     symbolStack.push(symbolStackItem);
+                    
+                    const popAstNodes = [astNodeStack.pop()];
+                    astNodeStack.push({ name: this.productions[0].left, children: popAstNodes });
+
                     return {
                         isSucc: true,
                         msg: '语法分析成功',
                         analizeProcess: analizeProcess,
+                        cst:astNodeStack[1],
                         ast: symbolStack[1].node
                     };
                 }
