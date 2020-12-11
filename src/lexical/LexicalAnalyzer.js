@@ -94,13 +94,11 @@ class LexicalAnalyzer{
             ch = this.code[this.codeIndex]
             this.codeIndex++
         }
-        if(ch == '\t')
-            this.col += 6 - this.col % 4
-        else if(ch == '\n'){
+        if(ch == '\n'){
             this.line++
             this.col = 1
         }
-        else if(ch != '\r')
+        else
             this.col++
         return ch
     }
@@ -239,7 +237,7 @@ class LexicalAnalyzer{
                 break
             }
         }
-        if(!this.Delimiter.includes(word.type) && !this.isOperator(word.type[0]) && this.codeIndex != this.code.length){
+        if(!this.Delimiter.includes(word.type) && !this.isOperator(word.type[0]) && this.codeIndex != this.code.length ){
             this.codeIndex--
             if(code[this.codeIndex] == '\n'){
                 this.line = this.oldline
@@ -351,17 +349,15 @@ class LexicalAnalyzer{
                     str = str.replace(/^ /, "")
                     this.col++
                 }
-                else if(str[0] == '\t'){
-                    str = str.replace(/^\t/, "")
-                    this.col += 6 - this.col % 4
-                }
                 else if(str[0] == '\n'){
                     str = str.replace(/^\n/, "")
                     this.line++
                     this.col = 1
                 }
-                else
-                    str.replace(/^\t/, "")
+                else{
+                    str.replace(/^(\r|\t)/, "")
+                    this.col++
+                }
             }
             word.loc.start.line = this.line
             word.loc.start.col = this.col

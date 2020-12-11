@@ -1,5 +1,6 @@
-const { app, BrowserWindow } = require('electron')
+const { app, dialog, ipcMain, BrowserWindow, Notification } = require('electron')
 const path = require('path')
+const fs = require('fs')
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -26,3 +27,11 @@ app.on('activate', () => {
         createWindow()
     }
 })
+
+ipcMain.on('读文件', (event, arg) => {
+    let filePath = dialog.showOpenDialogSync({ properties: ['openFile'] })
+    let code = fs.readFileSync(filePath[0]);
+    event.returnValue = code.toString()
+  })
+
+// const root = fs.readdirSync('/')
