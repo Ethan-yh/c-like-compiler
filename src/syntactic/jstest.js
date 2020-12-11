@@ -1,29 +1,21 @@
-const fs = require('fs');
-const path = require('path');
-const readline = require('readline');
+const arr = [];
+arr['a']=1;
+arr['b']=2;
+arr['c']=3;
+arr['d']=4;
 
-const filePath = path.resolve(__dirname, './productionsNew.txt')
+console.log(arr[0])
 
-var readStream = fs.createReadStream(filePath);
+for (let t in arr){
+    console.log(t)
+}
 
-let rl = readline.createInterface({
-    input: readStream
-});
+// arr.every((a, index)=>{
+//     console.log(a);
+//     console.log(index)
+// });
 
-let productionsLines = [];
-
-rl.on('line', (line) => {
-    if(line.length){
-        productionsLines.push(line);
-    }
-    
-});
-
-rl.on('close',async()=>{
-    let grammar = {};
-    grammar.productionsLines = productionsLines;
-    fs.writeFileSync('./grammar.json', JSON.stringify(grammar, null, 4));
-})
-
-
-
+// arr.forEach((a,index)=>{
+//     console.log(a);
+//     console.log(index)
+// });

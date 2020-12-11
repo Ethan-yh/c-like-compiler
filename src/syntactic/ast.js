@@ -1,6 +1,6 @@
 // 该文件为构造AST文件
 // 该文件定义了AST的各结点类以及各产生式的对应构造动作
-class Node_Program {
+class Program {
     constructor(loc, body = []) {
         this.type = 'Program';
         this.loc = loc;
@@ -8,7 +8,7 @@ class Node_Program {
     }
 }
 
-class Node_VariableDeclaration {
+class VariableDeclaration {
     constructor(loc, id = '', kind = 'int') {
         this.type = 'VariableDeclaration';
         this.loc = loc;
@@ -18,7 +18,7 @@ class Node_VariableDeclaration {
     }
 }
 
-class Node_FunctionDeclaration {
+class FunctionDeclaration {
     constructor(loc, id = {}, kind, params = [], body = []) {
         this.type = 'FunctionDeclaration';
         this.loc = loc;
@@ -29,7 +29,7 @@ class Node_FunctionDeclaration {
     }
 }
 
-class Node_BlockStatement {
+class BlockStatement {
     constructor(loc, body = []) {
         this.type = 'BlockStatement';
         this.loc = loc;
@@ -37,7 +37,7 @@ class Node_BlockStatement {
     }
 }
 
-class Node_Param {
+class Param {
     constructor(loc, id = {}, kind) {
         this.type = 'Identifier';
         this.loc = loc;
@@ -46,7 +46,7 @@ class Node_Param {
     }
 }
 
-class Node_Identifier {
+class Identifier {
     constructor(loc, name = '') {
         this.type = 'Identifier';
         this.loc = loc;
@@ -54,7 +54,7 @@ class Node_Identifier {
     }
 }
 
-class Node_ExpressionStatement {
+class ExpressionStatement {
     constructor(loc, expression) {
         this.type = 'ExpressionStatement';
         this.loc = loc;
@@ -63,7 +63,7 @@ class Node_ExpressionStatement {
 }
 
 
-class Node_AssignStatement {
+class AssignStatement {
     constructor(loc, left, right) {
         this.type = 'AssignStatement';
         this.loc = loc;
@@ -73,7 +73,7 @@ class Node_AssignStatement {
     }
 }
 
-class Node_IfStatement {
+class IfStatement {
     constructor(loc, test, consequent, alternate) {
         this.type = 'IfStatement';
         this.loc = loc;
@@ -83,7 +83,7 @@ class Node_IfStatement {
     }
 }
 
-class Node_WhileStatement {
+class WhileStatement {
     constructor(loc, test, body) {
         this.type = 'WhileStatement';
         this.loc = loc;
@@ -92,7 +92,7 @@ class Node_WhileStatement {
     }
 }
 
-class Node_ReturnStatement {
+class ReturnStatement {
     constructor(loc, argument) {
         this.type = 'ReturnStatement';
         this.loc = loc;
@@ -100,7 +100,7 @@ class Node_ReturnStatement {
     }
 }
 
-class Node_BinaryExpression {
+class BinaryExpression {
     constructor(loc, left, opetator, right) {
         this.type = 'BinaryExpression';
         this.loc = loc;
@@ -111,7 +111,7 @@ class Node_BinaryExpression {
     }
 }
 
-class Node_CallExpression {
+class CallExpression {
     constructor(loc, callee, args = []) {
         this.type = 'CallExpression';
         this.loc = loc;
@@ -120,7 +120,7 @@ class Node_CallExpression {
     }
 }
 
-class Node_Literal {
+class Literal {
     constructor(loc, value) {
         this.type = 'Literal';
         this.loc = loc;
@@ -149,7 +149,7 @@ actionFunctions['Program'][0] = function (symbols) {
     let symbol = {};
     symbol.loc = loc;
 
-    symbol.node = new Node_Program(loc, body);
+    symbol.node = new Program(loc, body);
 
     return symbol;
 }
@@ -210,7 +210,7 @@ actionFunctions['VariableDeclaration'][0] = function (symbols) {
     let symbol = {};
     symbol.loc = loc;
 
-    symbol.node = new Node_VariableDeclaration(loc, id, kind);
+    symbol.node = new VariableDeclaration(loc, id, kind);
 
     return symbol;
 }
@@ -231,7 +231,7 @@ for (let i = 0; i < 2; i++) {
         symbol.loc = loc;
 
 
-        symbol.node = new Node_FunctionDeclaration(loc, id, kind, params, body);
+        symbol.node = new FunctionDeclaration(loc, id, kind, params, body);
 
         return symbol;
     }
@@ -309,7 +309,7 @@ actionFunctions['Param'][0] = function (symbols) {
 
     let symbol = {};
     symbol.loc = loc;
-    symbol.node = new Node_Param(loc, id, kind);
+    symbol.node = new Param(loc, id, kind);
 
     return symbol;
 }
@@ -328,7 +328,7 @@ actionFunctions['BlockStatement'][0] = function (symbols) {
 
     let symbol = {};
     symbol.loc = loc;
-    symbol.node = new Node_BlockStatement(loc, body);
+    symbol.node = new BlockStatement(loc, body);
 
     return symbol;
 }
@@ -341,7 +341,7 @@ actionFunctions['BlockStatement'][1] = function (symbols) {
 
     let symbol = {};
     symbol.loc = loc;
-    symbol.node = new Node_BlockStatement(loc, body);
+    symbol.node = new BlockStatement(loc, body);
 
     return symbol;
 }
@@ -412,7 +412,7 @@ for (let i = 0; i < 4; i++) {
 
         let symbol = {};
         symbol.loc = loc;
-        symbol.node = new Node_ExpressionStatement(loc, expression);
+        symbol.node = new ExpressionStatement(loc, expression);
 
         return symbol;
     }
@@ -428,7 +428,7 @@ actionFunctions['AssignStatement'][0] = function (symbols) {
 
     let symbol = {};
     symbol.loc = loc;
-    symbol.node = new Node_AssignStatement(loc, left, right);
+    symbol.node = new AssignStatement(loc, left, right);
 
     return symbol;
 }
@@ -441,7 +441,7 @@ actionFunctions['ReturnStatement'][0] = function (symbols) {
 
     let symbol = {};
     symbol.loc = loc;
-    symbol.node = new Node_ReturnStatement(loc, null);
+    symbol.node = new ReturnStatement(loc, null);
 
     return symbol;
 }
@@ -451,7 +451,7 @@ actionFunctions['ReturnStatement'][1] = function (symbols) {
 
     let symbol = {};
     symbol.loc = loc;
-    symbol.node = new Node_ReturnStatement(loc, symbols[1].node);
+    symbol.node = new ReturnStatement(loc, symbols[1].node);
 
     return symbol;
 }
@@ -466,7 +466,7 @@ actionFunctions['WhileStatement'][0] = function (symbols) {
 
     let symbol = {};
     symbol.loc = loc;
-    symbol.node = new Node_WhileStatement(loc, test, body);
+    symbol.node = new WhileStatement(loc, test, body);
 
     return symbol;
 }
@@ -482,7 +482,7 @@ actionFunctions['IfStatement'][0] = function (symbols) {
 
     let symbol = {};
     symbol.loc = loc;
-    symbol.node = new Node_IfStatement(loc, test, consequent, alternate);
+    symbol.node = new IfStatement(loc, test, consequent, alternate);
 
     return symbol;
 }
@@ -530,7 +530,7 @@ actionFunctions['Expression'][1] = function (symbols) {
 
     let symbol = {};
     symbol.loc = loc;
-    symbol.node = new Node_BinaryExpression(loc, symbols[0].node, symbols[1].value, symbols[2].node);
+    symbol.node = new BinaryExpression(loc, symbols[0].node, symbols[1].value, symbols[2].node);
 
     return symbol;
 }
@@ -570,7 +570,7 @@ actionFunctions['AddExpression'][1] = function (symbols) {
 
     let symbol = {};
     symbol.loc = loc;
-    symbol.node = new Node_BinaryExpression(loc, symbols[0].node, '+', symbols[2].node);
+    symbol.node = new BinaryExpression(loc, symbols[0].node, '+', symbols[2].node);
 
     return symbol;
 }
@@ -580,7 +580,7 @@ actionFunctions['AddExpression'][2] = function (symbols) {
 
     let symbol = {};
     symbol.loc = loc;
-    symbol.node = new Node_BinaryExpression(loc, symbols[0].node, '-', symbols[2].node);
+    symbol.node = new BinaryExpression(loc, symbols[0].node, '-', symbols[2].node);
 
     return symbol;
 }
@@ -603,7 +603,7 @@ actionFunctions['Item'][1] = function (symbols) {
 
     let symbol = {};
     symbol.loc = loc;
-    symbol.node = new Node_BinaryExpression(loc, symbols[0].node, '*', symbols[2].node);
+    symbol.node = new BinaryExpression(loc, symbols[0].node, '*', symbols[2].node);
 
     return symbol;
 }
@@ -613,7 +613,7 @@ actionFunctions['Item'][2] = function (symbols) {
 
     let symbol = {};
     symbol.loc = loc;
-    symbol.node = new Node_BinaryExpression(loc, symbols[0].node, '/', symbols[2].node);
+    symbol.node = new BinaryExpression(loc, symbols[0].node, '/', symbols[2].node);
 
     return symbol;
 }
@@ -628,7 +628,7 @@ actionFunctions['Factor'][0] = function (symbols) {
 
     let symbol = {};
     symbol.loc = loc;
-    symbol.node = new Node_Literal(loc, value);
+    symbol.node = new Literal(loc, value);
     return symbol;
 }
 
@@ -672,7 +672,7 @@ actionFunctions['CallExpression'][0] = function (symbols) {
 
     let symbol = {};
     symbol.loc = loc;
-    symbol.node = new Node_CallExpression(loc, callee, args);
+    symbol.node = new CallExpression(loc, callee, args);
     return symbol;
 }
 
@@ -728,7 +728,7 @@ actionFunctions['ID'][0] = function (symbols) {
 
     let symbol = {};
     symbol.loc = loc;
-    symbol.node = new Node_Identifier(loc, symbols[0].value);
+    symbol.node = new Identifier(loc, symbols[0].value);
     return symbol;
 }
 
