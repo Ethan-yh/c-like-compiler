@@ -90,7 +90,7 @@ class LexicalAnalyzer{
      * @return {bool}
      */
     isBlank(ch){
-        if(ch == ' ' || ch == '\t'|| ch == '\r' || ch == '\n')
+        if(ch == ' ' || ch == '\t'|| ch == '\r' || ch == '\n' || ch == ' ')
             return true
         else
             return false
@@ -366,6 +366,10 @@ class LexicalAnalyzer{
                     str = str.replace(/^ /, "")
                     this.col++
                 }
+                else if(str[0] == ' '){
+                    str = str.replace(/^ /, "")
+                    this.col++
+                }
                 else if(str[0] == '\n'){
                     str = str.replace(/^\n/, "")
                     this.line++
@@ -415,9 +419,7 @@ class LexicalAnalyzer{
                 }
                 else if(word.value[0] == '/' && word.value[1] == '*'){
                         while(str[0] != '#' && str.length > 1){
-                            if(str[0] == '\t')
-                                this.col += 6 - this.col % 4
-                            else if(str[0] == '\n'){
+                            if(str[0] == '\n'){
                                 this.line++
                                 this.col = 1
                             }
@@ -537,14 +539,16 @@ return;\n\
 }\
 "
 
-// let lexAnalyzer = new LexicalAnalyzer()
-// code2 = "int a;"
+let lexAnalyzer = new LexicalAnalyzer()
+code2 = "int a;\n\
+\r\n \r\n \r\n"
 
-// lexAnalyzer.initLexAnalyzer(code)
+code3 ="int a;\r\nint b;\r\nint program(int a,int b,int c)\r\n{\r\n\tint i;\r\n\tint j;\r\n\ti=0; \t\r\n\tif(a>(b+c))\r\n\t{\r\n\t\tj=a+(b*c+1);\r\n\t}\r\n\telse\r\n\t{\r\n\t\tj=a;\r\n\t}\r\n\twhile(i<=100)\r\n\t{\r\n\t\ti=j*2;\r\n\t}\r\n\treturn i;\r\n}\r\n \r\n\r\n" 
+lexAnalyzer.initLexAnalyzer(code)
 
-// function test() {
-//     let result = lexAnalyzer.getLexResult() 
-//     console.log(result)
-// }
+function test() {
+    let result = lexAnalyzer.getLexResult() 
+    console.log(result)
+}
 
-// test()
+test()
