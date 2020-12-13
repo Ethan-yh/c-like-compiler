@@ -639,14 +639,14 @@ class Syntactic {
         }
         // 进行初始化工作
         let analizeProcess = [];//存放移进规约过程
-        let stateStack = [];
-        let symbolStack = [];
-        let astNodeStack = [];
-        stateStack.length = 0;
+        let stateStack = [];//状态栈
+        let astNodeStack = [];//ast结点栈
+        let cstNodeStack = [];//cst结点栈
+        let symbolStack = [];//符号栈
         stateStack.push(0);
-        symbolStack.length = 0;
-        symbolStack.push({ value: '#', loc: null });
-        astNodeStack.push({ name: '#' });
+        astNodeStack.push({ value: '#', loc: null });
+        cstNodeStack.push({ name: '#' });
+        symbolStack.push('#');
         let wordCount = 0;
         while (true) {
             const word = words[wordCount++];
@@ -670,12 +670,13 @@ class Syntactic {
 
                     const nextState = this.actionGotoTable.value[currentState][word.type].statePro;
                     stateStack.push(nextState);
-                    symbolStack.push({ value: word.value, loc: word.loc });
-                    astNodeStack.push({ name: word.value });
+                    astNodeStack.push({ value: word.value, loc: word.loc });
+                    cstNodeStack.push({ name: word.value });
+                    symbolStack.push(word.type);
                     analizeProcess.push({
                         action: '移进',
-                        stateStack: stateStack,
-                        symbolStack: symbolStack,
+                        stateStack: stateStack.slice(),
+                        symbolStack: symbolStack.slice(),
                         nextWord: nextWord
                     });
                     break;
@@ -691,18 +692,20 @@ class Syntactic {
                     } else {
                         productionLen = this.productions[proNum].right.length;
                     }
-                    const popSymbols = symbolStack.slice(stateStack.length - productionLen);
-                    const symbolStackItem = actionFunctions[this.productions[proNum].left][this.productions[proNum].rightNum](popSymbols);
                     const popAstNodes = astNodeStack.slice(astNodeStack.length - productionLen);
+                    const astNodeStackItem = actionFunctions[this.productions[proNum].left][this.productions[proNum].rightNum](popAstNodes);
+                    const popCstNodes = cstNodeStack.slice(cstNodeStack.length - productionLen);
                     // 弹出
                     for (let i = 0; i < productionLen; i++) {
                         stateStack.pop();
-                        symbolStack.pop();
                         astNodeStack.pop();
+                        cstNodeStack.pop();
+                        symbolStack.pop();
                     }
 
-                    astNodeStack.push({ name: this.productions[proNum].left, children: popAstNodes });
-                    symbolStack.push(symbolStackItem);
+                    cstNodeStack.push({ name: this.productions[proNum].left, children: popCstNodes });
+                    astNodeStack.push(astNodeStackItem);
+                    symbolStack.push(this.productions[proNum].left);
 
                     const newCurrentState = stateStack[stateStack.length - 1];
                     if (!this.actionGotoTable.find(newCurrentState, this.productions[proNum].left)) {
@@ -719,8 +722,8 @@ class Syntactic {
 
                     analizeProcess.push({
                         action: `规约,${this.productionsLinesOne[proNum]}`,
-                        stateStack: stateStack,
-                        symbolStack: symbolStack,
+                        stateStack: stateStack.slice(),
+                        symbolStack: symbolStack.slice(),
                         nextWord: word
                     });
                 }
@@ -728,24 +731,24 @@ class Syntactic {
                 else if (this.actionGotoTable.value[currentState][word.type].op == SLR_OP.ACC) {
                     analizeProcess.push({
                         action: '接受',
-                        stateStack: stateStack,
-                        symbolStack: symbolStack,
+                        stateStack: stateStack.slice(),
+                        symbolStack: symbolStack.slice(),
                         nextWord: null
                     });
                     // 使用产生式0规约
-                    const popSymbols = [symbolStack.pop()];
-                    const symbolStackItem = actionFunctions[this.productions[0].left][this.productions[0].rightNum](popSymbols);
-                    symbolStack.push(symbolStackItem);
-                    
                     const popAstNodes = [astNodeStack.pop()];
-                    astNodeStack.push({ name: this.productions[0].left, children: popAstNodes });
+                    const astNodeStackItem = actionFunctions[this.productions[0].left][this.productions[0].rightNum](popAstNodes);
+                    astNodeStack.push(astNodeStackItem);
+                    
+                    const popCstNodes = [cstNodeStack.pop()];
+                    cstNodeStack.push({ name: this.productions[0].left, children: popCstNodes });
 
                     return {
                         isSucc: true,
                         msg: '语法分析成功',
                         analizeProcess: analizeProcess,
-                        cst:astNodeStack[1],
-                        ast: symbolStack[1].node
+                        cst:cstNodeStack[1],
+                        ast: astNodeStack[1].node
                     };
                 }
                 else {
