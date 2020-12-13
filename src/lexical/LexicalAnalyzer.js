@@ -6,6 +6,7 @@ class LexicalAnalyzer{
     Operator = ["+", "-", "*", "/", "<", "<=", "=", "==", ">", ">=", "!="]
     Delimiter = [",", ";", "(", ")", "{", "}", "//", "/*", "*/", "#"]
 
+
     KeywordRegexp = /^(int|void|if|else|while|return)/
     IdentifierRegexp = /^([a-zA-Z]+\d*)/
     NumRegexp = /^(0|[1-9][0-9]*)/
@@ -18,6 +19,22 @@ class LexicalAnalyzer{
     col = 1         //当前词法分析所在列(从'1'开始)
     oldline = 0
     oldcol = 0
+
+    // code                    //代码
+    // codeIndex               //代码bian索引
+    // ch                      //字符变量，存放最新读到字符
+    // str                     //字符数组，存放最新读到单词
+    // lexResult               //字符串数组，存放词法分析结果
+    // initLexAnalyzer(code)   //初始化词法分析器
+    // isLetter(ch)            //判断是否是字母
+    // isDigit(ch)             //判断是否是数字
+    // isOperator(ch)          //判断是否是运算符
+    // isBlank(ch)             //判断是否是空白符
+    // getNextChar()           //获取字符流中的下一个字符
+    // getNextWord()           //得到代码中的下一个单词
+    // getLexResult()          //得到代码的词法分析结果
+
+
 
     /**
      * 初始化词法分析器
@@ -237,7 +254,7 @@ class LexicalAnalyzer{
                 break
             }
         }
-        if(!this.Delimiter.includes(word.type) && !this.isOperator(word.type[0]) && this.codeIndex != this.code.length ){
+        if(!this.Delimiter.includes(word.type) && !this.isOperator(word.type[0]) && (this.codeIndex != this.code.length || (this.codeIndex == this.code.length && !this.isLetter(this.code[this.codeIndex]) && !this.isDigit(this.code[this.codeIndex])))){
             this.codeIndex--
             if(code[this.codeIndex] == '\n'){
                 this.line = this.oldline
@@ -520,14 +537,14 @@ return;\n\
 }\
 "
 
-let lexAnalyzer = new LexicalAnalyzer()
-code2 = "else\n"
+// let lexAnalyzer = new LexicalAnalyzer()
+// code2 = "int a;"
 
-lexAnalyzer.initLexAnalyzer(code)
+// lexAnalyzer.initLexAnalyzer(code)
 
-function test() {
-    let result = lexAnalyzer.getLexResult() 
-    console.log(result)
-}
+// function test() {
+//     let result = lexAnalyzer.getLexResult() 
+//     console.log(result)
+// }
 
-test()
+// test()
