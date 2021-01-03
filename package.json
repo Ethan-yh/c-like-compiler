@@ -1,16 +1,37 @@
 {
   "name": "c-like-compiler",
   "version": "1.0.0",
-  "description": "",
+  "description": "A c-like compiler application",
   "main": "src/main/main.js",
+  "build": {
+    "appId": "com.xcompiler.app",
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "zip"
+      ],
+      "icon": "./images/logo.ico"
+    },
+    "electronDownload":{
+      "mirror":"https://npm.taobao.org/mirrors/electron/"
+    }
+  },
   "scripts": {
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dist": "electron-builder --win --x64"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^11.0.3"
+    "electron": "^11.0.3",
+    "electron-builder": "^22.9.1"
   }
 }

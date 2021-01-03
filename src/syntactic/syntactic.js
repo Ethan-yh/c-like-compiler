@@ -1,5 +1,6 @@
 
 const actionFunctions = require('./ast.js');
+const Semantic = require('../semantic/semantic');
 /**
  * 语法分析类
  */
@@ -577,7 +578,7 @@ class Syntactic {
     preForSyntacticAnalyzer() {
         // 若没有初始化产生式，则读默认产生式
         if (!this.productionsLines.length) {
-            const grammar = require('./grammar.json');
+            const grammar = require('./grammar2.json');
             this.productionsLines = grammar.productionsLines;
         }
 
@@ -634,6 +635,7 @@ class Syntactic {
      */
     startAnalize(words) {
         // 进行准备工作
+        let semantic = new Semantic();
         if (!this.preRes.isSucc) {
             return this.preRes;
         }
@@ -693,7 +695,18 @@ class Syntactic {
                         productionLen = this.productions[proNum].right.length;
                     }
                     const popAstNodes = astNodeStack.slice(astNodeStack.length - productionLen);
-                    const astNodeStackItem = actionFunctions[this.productions[proNum].left][this.productions[proNum].rightNum](popAstNodes);
+                    // const astNodeStackItem = actionFunctions[this.productions[proNum].left][this.productions[proNum].rightNum](popAstNodes);
+                    const semanticResult = semantic.startAnalize(this.productions[proNum].left,this.productions[proNum].rightNum,  popAstNodes);
+                    
+                    if(!semanticResult.isSucc){
+                        return {
+                            isSucc: false,
+                            errType:'semErr',
+                            msg: semanticResult.msg,
+                            errWord: semanticResult.errWord
+                        };
+                    }
+
                     const popCstNodes = cstNodeStack.slice(cstNodeStack.length - productionLen);
                     // 弹出
                     for (let i = 0; i < productionLen; i++) {
@@ -704,7 +717,7 @@ class Syntactic {
                     }
 
                     cstNodeStack.push({ name: this.productions[proNum].left, children: popCstNodes });
-                    astNodeStack.push(astNodeStackItem);
+                    astNodeStack.push(semanticResult.symbol);
                     symbolStack.push(this.productions[proNum].left);
 
                     const newCurrentState = stateStack[stateStack.length - 1];
@@ -737,18 +750,27 @@ class Syntactic {
                     });
                     // 使用产生式0规约
                     const popAstNodes = [astNodeStack.pop()];
-                    const astNodeStackItem = actionFunctions[this.productions[0].left][this.productions[0].rightNum](popAstNodes);
-                    astNodeStack.push(astNodeStackItem);
+                    const semanticResult = semantic.startAnalize(this.productions[0].left,this.productions[0].rightNum,  popAstNodes);
+                    if(!semanticResult.isSucc){
+                        return {
+                            isSucc: false,
+                            errType:'semErr',
+                            msg: semanticResult.msg,
+                            errWord: semanticResult.errWord
+                        };
+                    }
+                    astNodeStack.push(semanticResult.symbol);
                     
                     const popCstNodes = [cstNodeStack.pop()];
                     cstNodeStack.push({ name: this.productions[0].left, children: popCstNodes });
 
                     return {
                         isSucc: true,
-                        msg: '语法分析成功',
+                        msg: '语法语义分析成功',
                         analizeProcess: analizeProcess,
                         cst:cstNodeStack[1],
-                        ast: astNodeStack[1].node
+                        ast: astNodeStack[1].node,
+                        mid_code:semantic.quadruples
                     };
                 }
                 else {

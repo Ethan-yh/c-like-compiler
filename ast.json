@@ -6,21 +6,21 @@
       "col": 1
     },
     "end": {
-      "line": 5,
+      "line": 38,
       "col": 2
     }
   },
   "body": [
     {
-      "type": "FunctionDeclaration",
+      "type": "VariableDeclaration",
       "loc": {
         "start": {
           "line": 1,
           "col": 1
         },
         "end": {
-          "line": 5,
-          "col": 2
+          "line": 1,
+          "col": 7
         }
       },
       "id": {
@@ -28,10 +28,126 @@
         "loc": {
           "start": {
             "line": 1,
-            "col": 6
+            "col": 5
           },
           "end": {
             "line": 1,
+            "col": 6
+          }
+        },
+        "name": "a"
+      },
+      "kind": "int"
+    },
+    {
+      "type": "VariableDeclaration",
+      "loc": {
+        "start": {
+          "line": 2,
+          "col": 1
+        },
+        "end": {
+          "line": 2,
+          "col": 7
+        }
+      },
+      "id": {
+        "type": "Identifier",
+        "loc": {
+          "start": {
+            "line": 2,
+            "col": 5
+          },
+          "end": {
+            "line": 2,
+            "col": 6
+          }
+        },
+        "name": "b"
+      },
+      "kind": "int"
+    },
+    {
+      "type": "FunctionDeclaration",
+      "loc": {
+        "start": {
+          "line": 3,
+          "col": 1
+        },
+        "end": {
+          "line": 21,
+          "col": 2
+        }
+      },
+      "id": {
+        "type": "Identifier",
+        "loc": {
+          "start": {
+            "line": 3,
+            "col": 5
+          },
+          "end": {
+            "line": 3,
+            "col": 12
+          }
+        },
+        "name": "program"
+      },
+      "kind": "int",
+      "params": [],
+      "body": []
+    },
+    {
+      "type": "FunctionDeclaration",
+      "loc": {
+        "start": {
+          "line": 22,
+          "col": 1
+        },
+        "end": {
+          "line": 26,
+          "col": 2
+        }
+      },
+      "id": {
+        "type": "Identifier",
+        "loc": {
+          "start": {
+            "line": 22,
+            "col": 5
+          },
+          "end": {
+            "line": 22,
+            "col": 9
+          }
+        },
+        "name": "demo"
+      },
+      "kind": "int",
+      "params": [],
+      "body": []
+    },
+    {
+      "type": "FunctionDeclaration",
+      "loc": {
+        "start": {
+          "line": 28,
+          "col": 1
+        },
+        "end": {
+          "line": 38,
+          "col": 2
+        }
+      },
+      "id": {
+        "type": "Identifier",
+        "loc": {
+          "start": {
+            "line": 28,
+            "col": 6
+          },
+          "end": {
+            "line": 28,
             "col": 10
           }
         },
@@ -39,76 +155,7 @@
       },
       "kind": "void",
       "params": [],
-      "body": {
-        "type": "BlockStatement",
-        "loc": {
-          "start": {
-            "line": 2,
-            "col": 1
-          },
-          "end": {
-            "line": 5,
-            "col": 2
-          }
-        },
-        "body": [
-          {
-            "type": "VariableDeclaration",
-            "loc": {
-              "start": {
-                "line": 3,
-                "col": 1
-              },
-              "end": {
-                "line": 3,
-                "col": 7
-              }
-            },
-            "id": {
-              "type": "Identifier",
-              "loc": {
-                "start": {
-                  "line": 3,
-                  "col": 5
-                },
-                "end": {
-                  "line": 3,
-                  "col": 6
-                }
-              },
-              "name": "a"
-            },
-            "kind": "int"
-          },
-          {
-            "type": "ExpressionStatement",
-            "loc": {
-              "start": {
-                "line": 4,
-                "col": 1
-              },
-              "end": {
-                "line": 4,
-                "col": 8
-              }
-            },
-            "expression": {
-              "type": "ReturnStatement",
-              "loc": {
-                "start": {
-                  "line": 4,
-                  "col": 1
-                },
-                "end": {
-                  "line": 4,
-                  "col": 8
-                }
-              },
-              "argument": null
-            }
-          }
-        ]
-      }
+      "body": []
     }
   ]
 }

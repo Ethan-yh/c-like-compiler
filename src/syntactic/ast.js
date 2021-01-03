@@ -128,6 +128,18 @@ class Literal {
     }
 }
 
+class SymbolTableItem{
+    constructor(op, arg1, arg2, result){
+        this.op = op;
+        this.arg1 = arg1;
+        this.arg2 = arg2;
+        this.result = result;
+    }
+}
+
+
+
+
 
 function getLoc(symbols) {
     let loc = {};
