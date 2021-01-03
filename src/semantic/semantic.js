@@ -148,7 +148,7 @@ class Quadruple {
 class Semantic {
     constructor() {
         this.symbolTables = [];
-        this.symbolTables.push(new SymbolTable(-1, [], '全局'));
+        this.symbolTables.push(new SymbolTable(-1, [], '全局变量表'));
 
         // 记录当前符号表
         this.display = [];
@@ -163,6 +163,8 @@ class Semantic {
 
         this.lastID = null;
         this.funcID = null;
+
+        this.lastTablePointer = null;
     }
 
     // searchSymbolTable(name){
@@ -333,6 +335,10 @@ class Semantic {
             const stItem = new SymbolTableItem(symbols[1].node.name, 'function');
             this.insertSymbol(stItem);
 
+            // 回填符号表名字
+            const table = this.symbolTables[this.lastTablePointer];
+            table.name = symbols[1].node.name+'函数符号表';
+
             return {isSucc:true, symbol:symbol};
         }
         else if(left == 'M_Func' && rightNum == 0){
@@ -466,7 +472,8 @@ class Semantic {
 
             let symbol = {};
 
-            this.display.pop();
+            this.lastTablePointer = this.display.pop();
+            
         
             return {isSucc:true, symbol:symbol};
         }
@@ -601,6 +608,10 @@ class Semantic {
             let M2Quadruple = this.quadruples[symbols[5].quad];
             M2Quadruple.arg1 = symbols[3].place;
             M2Quadruple.result = this.quadruples.length;
+
+            // 回填符号表名字
+            const table = this.symbolTables[this.lastTablePointer];
+            table.name = 'While语句块符号表';
         
             return {isSucc:true, symbol:symbol};
         }
@@ -639,6 +650,12 @@ class Semantic {
 
             let NQuadruple = this.quadruples[symbols[6].quad];
             NQuadruple.result = this.quadruples.length;
+
+            // 回填符号表名字
+            let table = this.symbolTables[this.lastTablePointer-1];
+            table.name = 'If语句块符号表';
+            table = this.symbolTables[this.lastTablePointer];
+            table.name = 'Else语句块符号表';
         
             return {isSucc:true, symbol:symbol};
         }
@@ -678,6 +695,8 @@ class Semantic {
             let symbol = {};
             symbol.loc = loc;
             symbol.node = null;
+
+        
         
             return {isSucc:true, symbol:symbol};
         }

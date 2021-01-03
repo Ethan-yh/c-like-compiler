@@ -770,7 +770,8 @@ class Syntactic {
                         analizeProcess: analizeProcess,
                         cst:cstNodeStack[1],
                         ast: astNodeStack[1].node,
-                        mid_code:semantic.quadruples
+                        mid_code:semantic.quadruples,
+                        symbolTables:semantic.symbolTables
                     };
                 }
                 else {

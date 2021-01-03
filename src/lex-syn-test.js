@@ -75,6 +75,8 @@ function test() {
     }
 
     console.log(synResult.mid_code);
+    console.log(synResult.symbolTables);
+
 
     // for(let i = 0;i<syntactic.normalFamily.length;i++){
     //     const itemsSet = syntactic.normalFamily[i];
