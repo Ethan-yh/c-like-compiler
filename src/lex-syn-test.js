@@ -15,10 +15,6 @@ if(a>(b+c))\n\
 {\n\
 j=a+(b*c+1);\n\
 }\n\
-else\n\
-{\n\
-j=a;\n\
-}\n\
 while(i<=100)\n\
 {\n\
 i=j*2;\n\
@@ -88,7 +84,7 @@ function test() {
     //     }
     // }
     // console.log(syntactic.normalFamily);
-
+    console.log(synResult.ast)
     fs.writeFileSync('./ast.json', JSON.stringify(synResult.ast, null, 2));
     fs.writeFileSync('./cst.json', JSON.stringify(synResult.cst, null, 2));
 

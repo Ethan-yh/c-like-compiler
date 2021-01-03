@@ -309,8 +309,8 @@ class Semantic {
             const loc = getLoc(symbols);
             const id = symbols[1].node;
             const kind = symbols[0].value;
-            const params = symbols[3].nodes;
-            const body = symbols[5].node;
+            const params = symbols[4].nodes;
+            const body = symbols[6].node;
     
     
             let symbol = {};
@@ -637,8 +637,8 @@ class Semantic {
         else if(left == 'IfStatement' && rightNum == 0){
             const loc = getLoc(symbols);
             const test = symbols[2].node;
-            const consequent = symbols[4].node;
-            const alternate = symbols[5].node;
+            const consequent = symbols[5].node;
+            const alternate = symbols[8].node;
         
             let symbol = {};
             symbol.loc = loc;
@@ -690,10 +690,10 @@ class Semantic {
             return {isSucc:true, symbol:symbol};
         }
         else if(left == 'ElseStatement' && rightNum == 0){
-            const loc = getLoc(symbols);
+            // const loc = getLoc(symbols);
 
             let symbol = {};
-            symbol.loc = loc;
+            // symbol.loc = loc;
             symbol.node = null;
 
         
@@ -961,8 +961,16 @@ class Semantic {
 
 function getLoc(symbols) {
     let loc = {};
-    loc.start = symbols[0].loc.start;
-    loc.end = symbols[symbols.length - 1].loc.end;
+    let i=0;
+    let j=symbols.length-1;
+    while(!symbols[i].loc){
+        i++;
+    }
+    while(!symbols[j].loc){
+        j--;
+    }
+    loc.start = symbols[i].loc.start;
+    loc.end = symbols[j].loc.end;
     return loc;
 }
 
