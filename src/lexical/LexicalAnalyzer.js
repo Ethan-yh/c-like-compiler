@@ -6,6 +6,7 @@ class LexicalAnalyzer{
     Operator = ["+", "-", "*", "/", "<", "<=", "=", "==", ">", ">=", "!="]
     Delimiter = [",", ";", "(", ")", "{", "}", "//", "/*", "*/", "#"]
 
+
     KeywordRegexp = /^(int|void|if|else|while|return)/
     IdentifierRegexp = /^([a-zA-Z]+\d*)/
     NumRegexp = /^(0|[1-9][0-9]*)/
@@ -18,6 +19,22 @@ class LexicalAnalyzer{
     col = 1         //当前词法分析所在列(从'1'开始)
     oldline = 0
     oldcol = 0
+
+    // code                    //代码
+    // codeIndex               //代码bian索引
+    // ch                      //字符变量，存放最新读到字符
+    // str                     //字符数组，存放最新读到单词
+    // lexResult               //字符串数组，存放词法分析结果
+    // initLexAnalyzer(code)   //初始化词法分析器
+    // isLetter(ch)            //判断是否是字母
+    // isDigit(ch)             //判断是否是数字
+    // isOperator(ch)          //判断是否是运算符
+    // isBlank(ch)             //判断是否是空白符
+    // getNextChar()           //获取字符流中的下一个字符
+    // getNextWord()           //得到代码中的下一个单词
+    // getLexResult()          //得到代码的词法分析结果
+
+
 
     /**
      * 初始化词法分析器
@@ -73,7 +90,7 @@ class LexicalAnalyzer{
      * @return {bool}
      */
     isBlank(ch){
-        if(ch == ' ' || ch == '\t'|| ch == '\r' || ch == '\n')
+        if(ch == ' ' || ch == '\t'|| ch == '\r' || ch == '\n' || ch == ' ')
             return true
         else
             return false
@@ -162,6 +179,8 @@ class LexicalAnalyzer{
                 }        
                 /*除号*/
                 else{
+                    this.codeIndex--
+                    this.col--
                     word.type = "/"
                     word.value = "/"
                     break
@@ -210,8 +229,10 @@ class LexicalAnalyzer{
                             word.value = "\"!\" 不是操作符!!!"
                         }
                         else{
-                            this.codeIndex--
-                            this.col--
+                            if(this.codeIndex != this.code.length || chNext != '#'){
+                                this.codeIndex--
+                                this.col--
+                            }
                             word.type = str
                         }
                     }
@@ -237,7 +258,7 @@ class LexicalAnalyzer{
                 break
             }
         }
-        if(!this.Delimiter.includes(word.type) && !this.isOperator(word.type[0]) && this.codeIndex != this.code.length ){
+        if(!this.Delimiter.includes(word.type) && !this.isOperator(word.type[0]) && (this.codeIndex != this.code.length || (this.codeIndex == this.code.length && !this.isLetter(this.code[this.codeIndex]) && !this.isDigit(this.code[this.codeIndex])))){
             this.codeIndex--
             if(code[this.codeIndex] == '\n'){
                 this.line = this.oldline
@@ -349,6 +370,10 @@ class LexicalAnalyzer{
                     str = str.replace(/^ /, "")
                     this.col++
                 }
+                else if(str[0] == ' '){
+                    str = str.replace(/^ /, "")
+                    this.col++
+                }
                 else if(str[0] == '\n'){
                     str = str.replace(/^\n/, "")
                     this.line++
@@ -398,9 +423,7 @@ class LexicalAnalyzer{
                 }
                 else if(word.value[0] == '/' && word.value[1] == '*'){
                         while(str[0] != '#' && str.length > 1){
-                            if(str[0] == '\t')
-                                this.col += 6 - this.col % 4
-                            else if(str[0] == '\n'){
+                            if(str[0] == '\n'){
                                 this.line++
                                 this.col = 1
                             }
@@ -521,9 +544,10 @@ return;\n\
 "
 
 let lexAnalyzer = new LexicalAnalyzer()
-code2 = "else\n"
+code2 = ">=<#"
 
-lexAnalyzer.initLexAnalyzer(code)
+code3 ="int a;\r\nint b;\r\nint program(int a,int b,int c)\r\n{\r\n\tint i;\r\n\tint j;\r\n\ti=0; \t\r\n\tif(a>(b+c))\r\n\t{\r\n\t\tj=a+(b*c+1);\r\n\t}\r\n\telse\r\n\t{\r\n\t\tj=a;\r\n\t}\r\n\twhile(i<=100)\r\n\t{\r\n\t\ti=j*2;\r\n\t}\r\n\treturn i;\r\n}\r\n \r\n\r\n" 
+lexAnalyzer.initLexAnalyzer(code2)
 
 function test() {
     let result = lexAnalyzer.getLexResult() 
