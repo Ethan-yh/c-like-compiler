@@ -652,10 +652,16 @@ class Semantic {
             NQuadruple.result = this.quadruples.length;
 
             // 回填符号表名字
-            let table = this.symbolTables[this.lastTablePointer-1];
-            table.name = 'If语句块符号表';
-            table = this.symbolTables[this.lastTablePointer];
-            table.name = 'Else语句块符号表';
+            if(symbols[8].isNull){
+                let table = this.symbolTables[this.lastTablePointer];
+                table.name = 'If语句块符号表';
+            }else{
+                let table = this.symbolTables[this.lastTablePointer-1];
+                table.name = 'If语句块符号表';
+                table = this.symbolTables[this.lastTablePointer];
+                table.name = 'Else语句块符号表';
+            }
+            
         
             return {isSucc:true, symbol:symbol};
         }
@@ -695,6 +701,7 @@ class Semantic {
             let symbol = {};
             // symbol.loc = loc;
             symbol.node = null;
+            symbol.isNull = true;
 
         
         
@@ -706,6 +713,8 @@ class Semantic {
             let symbol = {};
             symbol.loc = loc;
             symbol.node = symbols[1].node;
+            symbol.isNull = false;
+
         
             return {isSucc:true, symbol:symbol};
         }

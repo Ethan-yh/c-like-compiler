@@ -15,6 +15,10 @@ if(a>(b+c))\n\
 {\n\
 j=a+(b*c+1);\n\
 }\n\
+else\n\
+{\n\
+j=a+(b*c+1);\n\
+}\n\
 while(i<=100)\n\
 {\n\
 i=j*2;\n\
