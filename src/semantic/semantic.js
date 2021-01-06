@@ -11,12 +11,19 @@ class Program {
 }
 
 class VariableDeclaration {
-    constructor(loc, id = '', kind = 'int') {
+    constructor(loc, kind = 'int', declarations=[]) {
         this.type = 'VariableDeclaration';
         this.loc = loc;
-        this.id = id;
         this.kind = kind;
-        this.params
+        this.declarations = declarations;
+    }
+}
+
+class VariableDeclarator{
+    constructor(loc, id = '') {
+        this.type = 'VariableDeclarator';
+        this.loc = loc;
+        this.id = id;
     }
 }
 
@@ -65,9 +72,9 @@ class ExpressionStatement {
 }
 
 
-class AssignStatement {
+class AssignmentExpression {
     constructor(loc, left, right) {
-        this.type = 'AssignStatement';
+        this.type = 'AssignmentExpression';
         this.loc = loc;
         this.operator = '=';
         this.left = left;
@@ -122,9 +129,9 @@ class CallExpression {
     }
 }
 
-class Literal {
+class NumericLiteral {
     constructor(loc, value) {
-        this.type = 'Literal';
+        this.type = 'NumericLiteral';
         this.loc = loc;
         this.value = value;
     }
@@ -288,8 +295,11 @@ class Semantic {
         
             let symbol = {};
             symbol.loc = loc;
+
+            const loc2 = getLoc([symbols[1], symbols[2]]);
+            const VariableDeclaratorNode = new VariableDeclarator(loc2, id);
         
-            symbol.node = new VariableDeclaration(loc, id, kind);
+            symbol.node = new VariableDeclaration(loc, kind, [VariableDeclaratorNode]);
             
             // 语义动作
             if(this.searchSymbolOneLevel(symbols[1].node.name, 'variable')){
@@ -413,7 +423,8 @@ class Semantic {
         
             let symbol = {};
             symbol.loc = loc;
-            symbol.node = new Param(loc, id, kind);
+            // symbol.node = new Param(loc, id, kind);
+            symbol.node = symbols[1].node;
 
             // 语义动作
             const stItem = new SymbolTableItem(symbols[1].node.name, 'variable');
@@ -525,7 +536,7 @@ class Semantic {
         
             return {isSucc:true, symbol:symbol};
         }
-        else if(left == 'ExpressionStatement'){
+        else if(left == 'ExpressionStatement' && rightNum == 3){
             const loc = getLoc(symbols);
             const expression = symbols[0].node;
     
@@ -535,14 +546,23 @@ class Semantic {
     
             return {isSucc:true, symbol:symbol};
         }
-        else if(left == 'AssignStatement' && rightNum == 0){
+        else if(left == 'ExpressionStatement'){
+            const loc = getLoc(symbols);
+    
+            let symbol = {};
+            symbol.loc = loc;
+            symbol.node = symbols[0].node;
+    
+            return {isSucc:true, symbol:symbol};
+        }
+        else if(left == 'AssignmentExpression' && rightNum == 0){
             const loc = getLoc(symbols);
             const left = symbols[0].node;
             const right = symbols[2].node;
         
             let symbol = {};
             symbol.loc = loc;
-            symbol.node = new AssignStatement(loc, left, right);
+            symbol.node = new AssignmentExpression(loc, left, right);
 
             // 语义分析
             const searchSymbol = this.searchSymbol(symbols[0].node.name, 'variable');
@@ -836,7 +856,7 @@ class Semantic {
         
             let symbol = {};
             symbol.loc = loc;
-            symbol.node = new Literal(loc, value);
+            symbol.node = new NumericLiteral(loc, value);
 
             symbol.place = symbols[0].value;
 

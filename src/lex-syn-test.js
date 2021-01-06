@@ -45,6 +45,11 @@ return;\n\
 "
 const code2 = "\
 int a;\n\
+int demo(int a)\n\
+{\n\
+a=a+2;\n\
+return a*2;\n\
+}\n\
 "
 
 
@@ -63,7 +68,7 @@ function test() {
     let syntactic = new Syntactic();
     const synResult = syntactic.startAnalize(lexResult.lexResult);
 
-    console.log('语法分析结果');
+    // console.log('语法分析结果');
     // console.log(synResult.analizeProcess);
 
     
@@ -74,8 +79,8 @@ function test() {
         return;
     }
 
-    console.log(synResult.mid_code);
-    console.log(synResult.symbolTables);
+    // console.log(synResult.mid_code);
+    // console.log(synResult.symbolTables);
 
 
     // for(let i = 0;i<syntactic.normalFamily.length;i++){
@@ -88,7 +93,9 @@ function test() {
     //     }
     // }
     // console.log(syntactic.normalFamily);
-    console.log(synResult.ast)
+    console.log(synResult.ast);
+    const jscode = syntactic.likec2js();
+    console.log(jscode)
     fs.writeFileSync('./ast.json', JSON.stringify(synResult.ast, null, 2));
     fs.writeFileSync('./cst.json', JSON.stringify(synResult.cst, null, 2));
 

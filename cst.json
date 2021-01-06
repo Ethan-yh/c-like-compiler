@@ -224,7 +224,7 @@
                                   "name": "ExpressionStatement",
                                   "children": [
                                     {
-                                      "name": "AssignStatement",
+                                      "name": "AssignmentExpression",
                                       "children": [
                                         {
                                           "name": "ID",
@@ -422,7 +422,7 @@
                                                       "name": "ExpressionStatement",
                                                       "children": [
                                                         {
-                                                          "name": "AssignStatement",
+                                                          "name": "AssignmentExpression",
                                                           "children": [
                                                             {
                                                               "name": "ID",
@@ -606,7 +606,7 @@
                                                           "name": "ExpressionStatement",
                                                           "children": [
                                                             {
-                                                              "name": "AssignStatement",
+                                                              "name": "AssignmentExpression",
                                                               "children": [
                                                                 {
                                                                   "name": "ID",
@@ -867,7 +867,7 @@
                                                           "name": "ExpressionStatement",
                                                           "children": [
                                                             {
-                                                              "name": "AssignStatement",
+                                                              "name": "AssignmentExpression",
                                                               "children": [
                                                                 {
                                                                   "name": "ID",
@@ -1087,7 +1087,7 @@
                                       "name": "ExpressionStatement",
                                       "children": [
                                         {
-                                          "name": "AssignStatement",
+                                          "name": "AssignmentExpression",
                                           "children": [
                                             {
                                               "name": "ID",
@@ -1363,7 +1363,7 @@
                                           "name": "ExpressionStatement",
                                           "children": [
                                             {
-                                              "name": "AssignStatement",
+                                              "name": "AssignmentExpression",
                                               "children": [
                                                 {
                                                   "name": "ID",
@@ -1413,7 +1413,7 @@
                                               "name": "ExpressionStatement",
                                               "children": [
                                                 {
-                                                  "name": "AssignStatement",
+                                                  "name": "AssignmentExpression",
                                                   "children": [
                                                     {
                                                       "name": "ID",
@@ -1463,7 +1463,7 @@
                                                   "name": "ExpressionStatement",
                                                   "children": [
                                                     {
-                                                      "name": "AssignStatement",
+                                                      "name": "AssignmentExpression",
                                                       "children": [
                                                         {
                                                           "name": "ID",
@@ -1513,7 +1513,7 @@
                                                       "name": "ExpressionStatement",
                                                       "children": [
                                                         {
-                                                          "name": "AssignStatement",
+                                                          "name": "AssignmentExpression",
                                                           "children": [
                                                             {
                                                               "name": "ID",

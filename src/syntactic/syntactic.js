@@ -1,6 +1,10 @@
 
 const actionFunctions = require('./ast.js');
 const Semantic = require('../semantic/semantic');
+// const { parse } = require("@babel/parser");
+const generate = require("@babel/generator").default;
+const traverse = require("@babel/traverse").default;
+
 /**
  * 语法分析类
  */
@@ -52,6 +56,11 @@ class Syntactic {
          * 语法分析准备的返回结果
          */
         this.preRes = this.preForSyntacticAnalyzer();
+
+        /**
+         * 记录抽象语法树
+         */
+        this.ast = {};
     }
 
     /**
@@ -764,6 +773,7 @@ class Syntactic {
                     const popCstNodes = [cstNodeStack.pop()];
                     cstNodeStack.push({ name: this.productions[0].left, children: popCstNodes });
 
+                    this.ast = astNodeStack[1].node;
                     return {
                         isSucc: true,
                         msg: '语法语义分析成功',
@@ -786,6 +796,22 @@ class Syntactic {
             }
         }
 
+    }
+
+    /**
+     * 转js代码
+     * @return {string}code
+     */
+    likec2js(){
+        // 遍历，将变量类型改为var
+        traverse({type:'File', program:this.ast}, {
+            VariableDeclaration: function(path) {
+                path.node.kind = "var";
+            }
+        });
+
+        // 生成js代码
+        return generate(this.ast).code;
     }
 }
 

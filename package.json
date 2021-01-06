@@ -18,8 +18,8 @@
       ],
       "icon": "./images/logo.ico"
     },
-    "electronDownload":{
-      "mirror":"https://npm.taobao.org/mirrors/electron/"
+    "electronDownload": {
+      "mirror": "https://npm.taobao.org/mirrors/electron/"
     }
   },
   "scripts": {
@@ -33,5 +33,10 @@
   "devDependencies": {
     "electron": "^11.0.3",
     "electron-builder": "^22.9.1"
+  },
+  "dependencies": {
+    "@babel/generator": "^7.12.11",
+    "@babel/parser": "^7.12.11",
+    "@babel/traverse": "^7.12.12"
   }
 }
