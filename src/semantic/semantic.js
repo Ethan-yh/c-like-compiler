@@ -125,7 +125,7 @@ class CallExpression {
         this.type = 'CallExpression';
         this.loc = loc;
         this.callee = callee;
-        this.args = args;
+        this.arguments = args;
     }
 }
 

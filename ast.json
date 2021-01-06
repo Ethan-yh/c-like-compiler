@@ -1493,7 +1493,7 @@
                   },
                   "name": "program"
                 },
-                "args": [
+                "arguments": [
                   {
                     "type": "Identifier",
                     "loc": {
@@ -1548,7 +1548,7 @@
                       },
                       "name": "demo"
                     },
-                    "args": [
+                    "arguments": [
                       {
                         "type": "Identifier",
                         "loc": {
